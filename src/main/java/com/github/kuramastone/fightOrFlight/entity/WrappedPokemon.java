@@ -1,0 +1,136 @@
+package com.github.kuramastone.fightOrFlight.entity;
+
+import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.cobblemon.mod.common.pokemon.Pokemon;
+import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
+import com.github.kuramastone.fightOrFlight.utils.FleeUtils;
+import com.github.kuramastone.fightOrFlight.utils.Utils;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+
+import java.util.SplittableRandom;
+
+public class WrappedPokemon {
+
+    private PokemonEntity pokemonEntity;
+    private AttackState attackState = AttackState.NONE;
+    private SplittableRandom random;
+
+    private LivingEntity target;
+    private boolean neverFleeTarget = false;
+
+    // remember last decision about fleeing from this source
+    private DamageSource cachedDamageSource;
+    private boolean willFleeFromCachedSource;
+
+    public WrappedPokemon(PokemonEntity pokemonEntity) {
+        this.pokemonEntity = pokemonEntity;
+        random = new SplittableRandom();
+    }
+
+    /**
+     * Consider different values of this pokemon and decide if they would flee from this target
+     */
+    public boolean shouldFlee(DamageSource lastDamageSource, LivingEntity target) {
+        if(target == this.target && neverFleeTarget)
+            return false;
+        if (lastDamageSource == cachedDamageSource)
+            return willFleeFromCachedSource;
+        if (target == null)
+            return false;
+
+        // dont flee when defending the owner
+        if (pokemonEntity.getOwner() != null) {
+            if (pokemonEntity.getOwner().getLastHurtByMob() == target)
+                return false;
+        }
+
+        // a positive score is more likely to flee
+
+        // does this nature encourage fleeing?
+        int natureScore = FleeUtils.getFleeingNatureScore(pokemonEntity.getPokemon());
+        // does this ability affect fleeing?
+        int abilityScore = FleeUtils.getAbilityFleeScore(pokemonEntity.getPokemon());
+        // is self bigger than target?
+        double relativeSize = 0.2 * (FleeUtils.getVolume(target.getBoundingBox()) - FleeUtils.getVolume(pokemonEntity.getBoundingBox()));
+        // is a higher level?
+        double levelScore;
+        // is stronger otherwise
+        double baseStatScore;
+
+        Pokemon targetPokemon = (target instanceof PokemonEntity) ?
+                ((PokemonEntity) target).getPokemon()
+                : FightOrFlightMod.instance.getAPI().getConfigOptions().getPokemonEquivalent(target.getType());
+        levelScore = 0.1 * (targetPokemon.getLevel() - pokemonEntity.getPokemon().getLevel());
+        baseStatScore = Math.tanh((FleeUtils.getBST(targetPokemon) - FleeUtils.getBST(pokemonEntity.getPokemon()))) * 2;
+
+        // add random variation
+        double rndVariation = 5;
+
+        double fleeScore = -2 + natureScore + abilityScore + relativeSize + levelScore + baseStatScore;
+
+        double minValue = fleeScore - rndVariation;
+        double maxValue = fleeScore + rndVariation;
+        double fleeLikelihood;
+        if (maxValue <= 0)
+            fleeLikelihood = 0.0; // guaranteed to not flee if max value is still below 0
+        else if (minValue >= 0)
+            fleeLikelihood = 1.0; // guaranteed to flee if min is still above 0
+        else
+            fleeLikelihood = (maxValue - Math.max(0, minValue)) / (maxValue - minValue);
+
+        boolean willFlee = random.nextDouble() < fleeLikelihood;
+//        Utils.broadcast("==============================");
+//        Utils.broadcast("nature=%s, ability=%s, size=%.2f, level=%s, bst=%.2f".formatted(natureScore, abilityScore, relativeSize, levelScore, baseStatScore));
+//        Utils.broadcast("willFlee=%s, chanceToFlee=%s%%, range=[%.1f <%.1f> %.1f]".formatted(willFlee, (int) (fleeLikelihood * 100), minValue, fleeScore, maxValue));
+
+        cachedDamageSource = lastDamageSource;
+        willFleeFromCachedSource = willFlee;
+
+        return willFlee;
+    }
+
+    /**
+     * Use special if the special stat is higher. Random if the stats are equal
+     */
+    public boolean shouldUseSpecialAttack() {
+        int spa = pokemonEntity.getPokemon().getSpecialAttack();
+        int att = pokemonEntity.getPokemon().getAttack();
+
+        if (spa > att)
+            return true;
+        else if (att > spa)
+            return false;
+        else
+            return random.nextBoolean();
+    }
+
+    public PokemonEntity getPokemonEntity() {
+        return pokemonEntity;
+    }
+
+    public Pokemon getPokemon() {
+        return pokemonEntity.getPokemon();
+    }
+
+    public void setAttackState(AttackState attackState) {
+        this.attackState = attackState;
+    }
+
+    public AttackState getAttackState() {
+        return attackState;
+    }
+
+    public LivingEntity getTarget() {
+        return target;
+    }
+
+    public void setTarget(LivingEntity target) {
+        setTarget(target, false);
+    }
+
+    public void setTarget(LivingEntity target, boolean neverFlee) {
+        this.target = target;
+        this.neverFleeTarget = neverFlee;
+    }
+}

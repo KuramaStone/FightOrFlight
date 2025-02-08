@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "fightorflight",
+  "version": "${version}",
+  "name": "Fight Or Flight",
+  "description": "Make pokemon interact with nearby entities!",
+  "authors": [
+    "KuramaStone"
+  ],
+  "license": "MIT License",
+  "icon": "assets/example/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.github.kuramastone.fightOrFlight.FightOrFlightMod"
+    ]
+  },
+  "depends": {
+    "minecraft": "1.21.1",
+    "cobblemon": ">=1.6.0"
+  },
+  "mixins": [
+    "fightorfight.mixins.json"
+  ]
+}

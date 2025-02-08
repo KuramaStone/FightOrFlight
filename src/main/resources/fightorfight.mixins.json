@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.kuramastone.fightOrFlight.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+
+  ],
+  "client": [
+  ],
+  "server": [
+    "DragonFireballMixin",
+    "EmptyPokeBallEntityMixin",
+    "EntityMixin",
+    "EvokerFangsMixin",
+    "SmallFireballMixin",
+    "LivingEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,31 @@
+config-version: 1
+
+Messages:
+  pokewand:
+    targeted: "<gold>[Target Selected]"
+    received: "<green>You have received a <yellow>PokeWand<green>!"
+
+# PokeWand
+# Player wands will update when they login or interact with the old wands
+pokewand:
+  item: "minecraft:bone"
+  customModelData: 0
+  name: "<yellow>PokeWand"
+  lore:
+    - "Right click to target a pokemon!"
+
+# These are the stats used for non-pokemon entities.
+# Type effectiveness is completely ignored for these entities.
+# "default" will be used for any entity that isnt listed.
+# MEW is a nice baseline as it has average defensive and offensive stats dont matter.
+entity-to-pokemon:
+  minecraft:cow:
+    pokemon: "MEW lvl=10"
+  minecraft:chicken:
+    pokemon: "MEW lvl=10"
+  minecraft:sheep:
+    pokemon: "MEW lvl=10"
+  minecraft:ender_dragon:
+    pokemon: "ARCEUS lvl=100"
+  default:
+    pokemon: "MEW lvl=50"
