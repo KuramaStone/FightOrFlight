@@ -21,6 +21,7 @@ public class PokeAttackGoal extends Goal {
 
     protected SplittableRandom random = new SplittableRandom();
     private long timeOfLastAttack;
+    private long timeOfAttackStart;
 
     private LivingEntity targetMob;
     private boolean setTargetToNullAtEnd;
@@ -44,6 +45,7 @@ public class PokeAttackGoal extends Goal {
                 return;
             if (!pokemonEntity.getSensing().hasLineOfSight(targetMob))
                 createPathToTarget();
+            timeOfAttackStart = System.currentTimeMillis();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,10 +131,18 @@ public class PokeAttackGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
+        // if target has changed, stop trying to attack.
         if(wrappedPokemon.getTarget() != targetMob) {
             setTargetToNullAtEnd = false;
             return false;
         }
+
+        // stop trying to attack if the time of last attack was 30 seonds ago
+        if(System.currentTimeMillis() > timeOfAttackStart + 30000) {
+            setTargetToNullAtEnd = true;
+            return false;
+        }
+
         return !pokemonEntity.isDeadOrDying() && (targetMob != null && !targetMob.isDeadOrDying() && isTargetInRange());
     }
 

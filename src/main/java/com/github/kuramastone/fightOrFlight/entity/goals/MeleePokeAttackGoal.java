@@ -23,6 +23,7 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
     private final WrappedPokemon wrappedPokemon;
     private long lastCanUseCheck;
     private Field pathField = ReflectionUtils.getMeleeAttackGoalPathField();
+    private long timeOfAttackStart;
 
     public MeleePokeAttackGoal(FOFApi api, PokemonEntity pokemonEntity) {
         super(pokemonEntity, calculateMovementSpeed(pokemonEntity), true);
@@ -74,6 +75,7 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
     @Override
     public void start() {
         super.start();
+        timeOfAttackStart = System.currentTimeMillis();
         pokemonEntity.setTarget(wrappedPokemon.getTarget());
     }
 
@@ -81,6 +83,7 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
     public void stop() {
         super.stop();
         wrappedPokemon.setAttackState(AttackState.NONE);
+        wrappedPokemon.setTarget(null);
     }
 
     private boolean isTargetInRange() {
@@ -91,6 +94,13 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
 
     @Override
     public boolean canContinueToUse() {
+
+        // lose focus after 30 seconds
+        if(System.currentTimeMillis() > (timeOfAttackStart+30000)) {
+            wrappedPokemon.setTarget(null);
+            return false;
+        }
+
         boolean notNull = wrappedPokemon.getTarget() != null;
         boolean inRange = notNull && isTargetInRange();
         boolean inMelee = notNull && wrappedPokemon.getAttackState() == AttackState.MELEE;

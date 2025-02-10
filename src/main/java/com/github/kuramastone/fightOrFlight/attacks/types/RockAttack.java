@@ -92,11 +92,16 @@ public class RockAttack extends PokeAttack {
                     for (int z = (int) aabb.minZ; z <= (int) aabb.maxZ; z++) {
                         int x2 = x;
                         int z2 = z;
-                        if(x < 0)
-                            x -=1;
-                        if(z < 0)
+                        if (x < 0)
+                            x -= 1;
+                        if (z < 0)
                             z2 -= 1;
-                        layer.add(new BlockPos(x2, y, z2));
+
+                        // only place edges, not the insides. just a slight performance boost.
+//                        if (x == (int) aabb.minX || x == (int) aabb.maxX
+//                                || y == (int) aabb.minY || y == (int) aabb.maxY
+//                                || z == (int) aabb.minZ || z == (int) aabb.maxZ)
+                            layer.add(new BlockPos(x2, y, z2));
                     }
                 }
                 blocksToPlace.add(layer);
