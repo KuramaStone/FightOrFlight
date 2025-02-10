@@ -1,8 +1,19 @@
-config-version: 1
+config-version: 3
+
+# Pokemon normally provide exp and EVs when defeated outside of battle. This disabled that.
+disable-rewards-outside-battle: false
+
+# High values mean less aggression. Low values mean more aggressive.
+# Set to -1 to make it make wild mobs passive.
+standard-aggression-timer-ticks: 3600
+
+# Set to true to disable player-owned pokemon from being aggressive without provocation
+owned-pokemon-aggression-disabled: false
 
 Messages:
   pokewand:
     targeted: "<gold>[Target Selected]"
+    detargeted: "<gray>[Called Off Pokemon]"
     received: "<green>You have received a <yellow>PokeWand<green>!"
 
 # PokeWand

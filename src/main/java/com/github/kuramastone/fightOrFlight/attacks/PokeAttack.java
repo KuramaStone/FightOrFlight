@@ -55,7 +55,8 @@ public abstract class PokeAttack {
             // receive rewards if ko'd
             if (newHealth == 0) {
                 if (oldHealth > 0)
-                    provideKnockOutRewards(attacker, pokeDefender);
+                    if (!FightOrFlightMod.instance.getAPI().getConfigOptions().disableRewardsOutsideBattle)
+                        provideKnockOutRewards(attacker, pokeDefender);
             }
 
 

@@ -85,6 +85,7 @@ public class RockAttack extends PokeAttack {
 
             AABB aabb = target.getBoundingBox().inflate(0.1, 0, 0.1);
 
+            blocksToPlace.clear();
             for (int y = (int) aabb.minY; y <= (int) aabb.maxY; y++) {
                 List<BlockPos> layer = new ArrayList<>();
                 for (int x = (int) aabb.minX; x <= (int) aabb.maxX; x++) {
@@ -111,6 +112,7 @@ public class RockAttack extends PokeAttack {
 
                 spawnParticleAt(particleMain, it.position(), (int) (5 * Math.max(1, power)), 1, 1, 1, 1);
             });
+            displayEntities.clear();
         }
 
         @Override

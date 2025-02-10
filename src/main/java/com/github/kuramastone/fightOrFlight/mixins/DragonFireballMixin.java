@@ -67,6 +67,7 @@ public class DragonFireballMixin {
             }
 
             fireball.remove(Entity.RemovalReason.DISCARDED);
+            dataMap.remove(this);
             ci.cancel();
         }
 

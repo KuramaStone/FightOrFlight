@@ -48,6 +48,7 @@ public class PokemonListener {
                 goalSelector.addGoal(2, new PokeAttackGoal(api, pokemonEntity));
                 goalSelector.addGoal(3, new DefendOwnerGoal(pokemonEntity));
                 goalSelector.addGoal(3, new DefendSelfGoal(pokemonEntity));
+                goalSelector.addGoal(4, new ExtraAggressionGoal(pokemonEntity));
                 //FightOrFlightMod.logger.info("{} has had their ai modified", pokemonEntity.getPokemon().getSpecies().getName());
 
             } catch (Exception e) {

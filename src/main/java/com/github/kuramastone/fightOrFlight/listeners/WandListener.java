@@ -3,6 +3,7 @@ package com.github.kuramastone.fightOrFlight.listeners;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.net.messages.client.animation.PlayPosableAnimationPacket;
 import com.github.kuramastone.fightOrFlight.FOFApi;
+import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -12,6 +13,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -25,10 +27,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static com.github.kuramastone.fightOrFlight.utils.Utils.style;
 
@@ -54,7 +53,7 @@ public class WandListener {
         for (NonNullList<ItemStack> compartment : player.getInventory().compartments) {
             for (int i = 0; i < compartment.size(); i++) {
                 ItemStack itemStack = compartment.get(i);
-                if(api.getWandManager().isWand(itemStack)) {
+                if (api.getWandManager().isWand(itemStack)) {
                     int amount = itemStack.getCount();
                     ItemStack newWand = api.getWandManager().getWand();
                     newWand.setCount(amount);
@@ -84,17 +83,33 @@ public class WandListener {
 
             // dont attack your own pokemon
             boolean success = false;
-            if (targetEntity != null && !nearbyPartyMembers.contains(targetEntity)) {
+            boolean didAlliesAlreadyHaveTargets = false;
+            if (!nearbyPartyMembers.contains(targetEntity)) {
                 for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
                     if (pokemonEntity != targetEntity) {
-                        api.getWrappedPokemon(pokemonEntity).setTarget(targetEntity, true);
+                        WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
+                        if (wrappedPokemon.getTarget() != null)
+                            didAlliesAlreadyHaveTargets = true;
+                        wrappedPokemon.setTarget(targetEntity, true);
                         success = true;
                     }
                 }
             }
-            if(success) {
-                player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.targeted")));
-                player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+            if (success) {
+                if (targetEntity != null) {
+                    player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.targeted")));
+                    player.level().playSeededSound(player, player.getX(), player.getY(), player.getZ(),
+                            SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.HOSTILE,
+                            1.0f, 1.0f, new Random().nextLong());
+                } else {
+                    // only send detarget message if they had a target
+                    if (didAlliesAlreadyHaveTargets) {
+                        player.level().playSeededSound(player, player.getX(), player.getY(), player.getZ(),
+                                SoundEvents.WOOD_HIT, SoundSource.HOSTILE,
+                                1.0f, 1.0f, new Random().nextLong());
+                        player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.detargeted")));
+                    }
+                }
             }
 
         }

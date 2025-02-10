@@ -38,9 +38,11 @@ public class SmallFireballMixin {
                 if (livingDefender == data.targetEntity)
                     PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getFIRE(), data.pokemonEntity, data.targetEntity);
             }
+
+            dataMap.remove(this);
+            ci.cancel();
         }
 
-        ci.cancel();
     }
 
     /**

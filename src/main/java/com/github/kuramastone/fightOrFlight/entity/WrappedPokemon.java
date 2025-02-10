@@ -1,5 +1,7 @@
 package com.github.kuramastone.fightOrFlight.entity;
 
+import com.cobblemon.mod.common.api.pokemon.stats.Stat;
+import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
@@ -7,6 +9,7 @@ import com.github.kuramastone.fightOrFlight.utils.FleeUtils;
 import com.github.kuramastone.fightOrFlight.utils.Utils;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.SplittableRandom;
 
@@ -132,5 +135,17 @@ public class WrappedPokemon {
     public void setTarget(LivingEntity target, boolean neverFlee) {
         this.target = target;
         this.neverFleeTarget = neverFlee;
+    }
+
+    public Pair<Stat, Integer> getHigherAttackStat() {
+        int spa = pokemonEntity.getPokemon().getSpecialAttack();
+        int att = pokemonEntity.getPokemon().getAttack();
+
+        if (spa > att)
+            return Pair.of(Stats.SPECIAL_ATTACK, spa);
+        else if (att > spa)
+            return Pair.of(Stats.ATTACK, att);
+        else
+            return random.nextBoolean() ? Pair.of(Stats.SPECIAL_ATTACK, spa) : Pair.of(Stats.ATTACK, att);
     }
 }

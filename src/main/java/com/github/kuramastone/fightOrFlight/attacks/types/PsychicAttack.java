@@ -83,6 +83,9 @@ public class PsychicAttack extends PokeAttack {
                 target.level().playSeededSound(null, target.getX(), target.getY(), target.getZ(),
                         SoundEvents.WOLF_SHAKE, SoundSource.HOSTILE,
                         4.0f, 1.0f, random.nextLong());
+                target.level().playSeededSound(null, target.getX(), target.getY(), target.getZ(),
+                        SoundEvents.WOLF_SHAKE, SoundSource.HOSTILE,
+                        0.25f, 1.0f, random.nextLong());
                 dealtDamage = true;
             }
 

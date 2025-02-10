@@ -4,7 +4,10 @@ import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.route.Route;
 import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
+import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
+import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -30,6 +33,9 @@ public class ConfigOptions {
 
     public Map<EntityType<?>, Pokemon> mobPokemonEquivalents;
     public Pokemon defaultMobPokemonEquivalent;
+    public int baseAggressionTimer;
+    public boolean disableRewardsOutsideBattle;
+    public boolean ownedPokemonAggressionDisabled;
 
     public ItemStack pokeWand;
 
@@ -45,10 +51,21 @@ public class ConfigOptions {
         try {
             File diskFile = new File(new File(FabricLoader.getInstance().getConfigDir().toFile(), FightOrFlightMod.MODID), "config.yml");
             YamlDocument config = YamlDocument.create(diskFile, getClass().getResourceAsStream("/fightorflight.config.yml"),
-                    GeneralSettings.builder().setUseDefaults(false).build());
+                    GeneralSettings.builder().setUseDefaults(false).build(),
+                    LoaderSettings.builder().setAutoUpdate(true).build(),
+                    UpdaterSettings.builder()
+                            .addIgnoredRoute("2", Route.from("entity-to-pokemon")) // dont auto-update this section
+
+                            .addIgnoredRoute("3", Route.from("entity-to-pokemon")) // dont auto-update this section
+                            .build());
             document = config;
             loadEntityTypes(config);
             loadPokeWand(config);
+
+            baseAggressionTimer = config.getInt("standard-aggression-timer-ticks", 3600);
+            disableRewardsOutsideBattle = config.getBoolean("disable-rewards-outside-battle", false);
+            ownedPokemonAggressionDisabled = config.getBoolean("owned-pokemon-aggression-disabled", false);
+
 
         } catch (Exception e) {
             throw new RuntimeException("Error loading config.yml.", e);
