@@ -116,20 +116,19 @@ public abstract class PokeAttack {
 
     private static void provideExpRewards(PokemonEntity attacker, PokemonEntity pokeDefender) {
         if (attacker.getOwner() instanceof ServerPlayer serverPlayer) {
+            // provide exp for main pokemon
+
             // provide exp rewards to any party members with exp share. exclude attacker
             for (Pokemon pokemon : Cobblemon.INSTANCE.getStorage().getParty(serverPlayer)) {
                 if (!pokemon.getUuid().equals(attacker.getPokemon().getUuid())) {
-                    if (attacker.getPokemon().getHeldItem$common().is(CobblemonItemTags.EXPERIENCE_SHARE)) {
-                        int experience = Cobblemon.INSTANCE.getExperienceCalculator().calculate(
-                                new BattlePokemon(attacker.getPokemon(), attacker.getPokemon(), (a) -> Unit.INSTANCE),
-                                new BattlePokemon(pokeDefender.getPokemon(), pokeDefender.getPokemon(), (b) -> Unit.INSTANCE),
-                                Cobblemon.config.getExperienceShareMultiplier());
+                    if (pokemon.getHeldItem$common().is(CobblemonItemTags.EXPERIENCE_SHARE)) {
+                        double expMultiplier = Cobblemon.config.getExperienceShareMultiplier();
+                        int experience = PokeUtils.calculateExperience(attacker.getPokemon(), pokeDefender.getPokemon(), expMultiplier);
                         pokemon.addExperienceWithPlayer(serverPlayer, new SidemodExperienceSource(FightOrFlightMod.MODID), experience);
                     }
                 }
             }
 
-            // provide exp for main pokemon
             double expMultiplier = 1.0;
             if (attacker.getPokemon().getHeldItem$common().is(CobblemonItemTags.EXPERIENCE_SHARE))
                 expMultiplier = Cobblemon.config.getExperienceShareMultiplier();
