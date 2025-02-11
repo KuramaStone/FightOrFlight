@@ -105,8 +105,12 @@ public class RockAttack extends PokeAttack {
                     }
                 }
                 blocksToPlace.add(layer);
+                if(blocksToPlace.size() > 50) {
+                    break;
+                }
             }
 
+            placeBlockLayer();
         }
 
         @Override
@@ -118,6 +122,7 @@ public class RockAttack extends PokeAttack {
                 spawnParticleAt(particleMain, it.position(), (int) (5 * Math.max(1, power)), 1, 1, 1, 1);
             });
             displayEntities.clear();
+            blocksToPlace.clear();
         }
 
         @Override
@@ -125,19 +130,7 @@ public class RockAttack extends PokeAttack {
             pokemonEntity.getLookControl().setLookAt(target);
 
             if (!blocksToPlace.isEmpty() && hasPassedSectionsOf(blocksToPlace.size())) {
-                List<BlockPos> layer = blocksToPlace.removeFirst();
-                for (BlockPos blockPos : layer) {
-                    Display.BlockDisplay display = new Display.BlockDisplay(EntityType.BLOCK_DISPLAY, target.level());
-                    display.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-                    try {
-                        ReflectionUtils.displayBlockMethod_setBlockState(display, Blocks.COBBLESTONE.defaultBlockState());
-                    } catch (InvocationTargetException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                    target.level().addFreshEntity(display);
-                    displayEntities.add(display);
-                    EntityUtils.entitiesToNotSave.add(display.getUUID()); // guarantees that it wont wrongly save
-                }
+                placeBlockLayer();
                 target.level().playSeededSound(null, target.getX(), target.getY(), target.getZ(),
                         SoundEvents.DEEPSLATE_BRICKS_FALL, SoundSource.HOSTILE,
                         0.5f, 1.0f, random.nextLong());
@@ -148,6 +141,22 @@ public class RockAttack extends PokeAttack {
                 target.setDeltaMovement(0, -0.1, 0);
             }
 
+        }
+
+        private void placeBlockLayer() {
+            List<BlockPos> layer = blocksToPlace.removeFirst();
+            for (BlockPos blockPos : layer) {
+                Display.BlockDisplay display = new Display.BlockDisplay(EntityType.BLOCK_DISPLAY, target.level());
+                display.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                try {
+                    ReflectionUtils.displayBlockMethod_setBlockState(display, Blocks.COBBLESTONE.defaultBlockState());
+                } catch (InvocationTargetException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                target.level().addFreshEntity(display);
+                displayEntities.add(display);
+                EntityUtils.entitiesToNotSave.add(display.getUUID()); // guarantees that it wont wrongly save
+            }
         }
     }
 
