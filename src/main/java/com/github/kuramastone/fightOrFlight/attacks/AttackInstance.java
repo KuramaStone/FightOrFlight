@@ -52,20 +52,25 @@ public abstract class AttackInstance implements Runnable {
 
     @Override
     public void run() {
-        if (currentTick == 0)
-            start();
+        try {
+            if (currentTick == 0)
+                start();
 
-        PokemonEntity pokeTarget = target instanceof PokemonEntity ? (PokemonEntity) target : null;
+            PokemonEntity pokeTarget = target instanceof PokemonEntity ? (PokemonEntity) target : null;
 
-        if (!pokemonEntity.isDeadOrDying() && !pokemonEntity.isBusy() && !pokemonEntity.isBattling()
-                && (pokeTarget == null || (!pokeTarget.isBattling() && !pokeTarget.isBusy())))
-            tick();
+            if (!pokemonEntity.isDeadOrDying() && !pokemonEntity.isBusy() && !pokemonEntity.isBattling()
+                    && (pokeTarget == null || (!pokeTarget.isBattling() && !pokeTarget.isBusy())))
+                tick();
 
-        currentTick++;
-        if (currentTick == maxTicks) {
-            end();
-            future.complete(true);
-            forgeTask.isCancelled = true;
+            currentTick++;
+            if (currentTick == maxTicks) {
+                end();
+                future.complete(true);
+                forgeTask.isCancelled = true;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
