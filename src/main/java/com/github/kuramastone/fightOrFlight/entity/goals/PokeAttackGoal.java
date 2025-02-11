@@ -12,6 +12,7 @@ import net.minecraft.world.level.pathfinder.Path;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class PokeAttackGoal extends Goal {
 
@@ -26,6 +27,7 @@ public class PokeAttackGoal extends Goal {
     private LivingEntity targetMob;
     private boolean setTargetToNullAtEnd;
     private Path path;
+    private CompletableFuture<Boolean> currentAttack;
 
     public PokeAttackGoal(FOFApi api, PokemonEntity pokemonEntity) {
         Objects.requireNonNull(pokemonEntity, "Pokemon cannot be null for goal!");
@@ -68,6 +70,14 @@ public class PokeAttackGoal extends Goal {
         try {
             super.tick();
 
+
+            if(this.currentAttack != null) {
+                if(this.currentAttack.isDone()) {
+                    this.currentAttack = null;
+                }
+                return;
+            }
+
             // only move until we have line of sight
             if (pokemonEntity.getSensing().hasLineOfSight(targetMob)) {
                 pokemonEntity.getNavigation().stop();
@@ -88,7 +98,7 @@ public class PokeAttackGoal extends Goal {
                     //start ranged attack.
                     if (attack.isRanged()) {
                         pokemonEntity.getNavigation().stop();
-                        attack.perform(pokemonEntity, targetMob);
+                        this.currentAttack = attack.perform(pokemonEntity, targetMob);
                         setTargetToNullAtEnd = true;
                     }
                     // set to perform melee. Melee goal will take over

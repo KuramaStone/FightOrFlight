@@ -83,6 +83,7 @@ public class WrappedPokemon {
             fleeLikelihood = (maxValue - Math.max(0, minValue)) / (maxValue - minValue);
 
         boolean willFlee = random.nextDouble() < fleeLikelihood;
+        willFlee = false;
 //        Utils.broadcast("==============================");
 //        Utils.broadcast("nature=%s, ability=%s, size=%.2f, level=%s, bst=%.2f".formatted(natureScore, abilityScore, relativeSize, levelScore, baseStatScore));
 //        Utils.broadcast("willFlee=%s, chanceToFlee=%s%%, range=[%.1f <%.1f> %.1f]".formatted(willFlee, (int) (fleeLikelihood * 100), minValue, fleeScore, maxValue));

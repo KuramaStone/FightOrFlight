@@ -112,9 +112,9 @@ public abstract class AttackInstance implements Runnable {
     protected boolean hasPassedSectionsOf(int maxAttacks) {
         if (maxAttacks == 1)
             return currentTick == maxTicks - 1;
-        double lastAttackIndex = (double) (currentTick - 1) / maxTicks * maxAttacks;
+        double prevAttackIndex = (double) (currentTick - 1) / maxTicks * maxAttacks;
         double currentAttackIndex = (double) currentTick / maxTicks * maxAttacks;
-        if (Math.signum(lastAttackIndex) != Math.signum(currentAttackIndex) || (int) (lastAttackIndex) != (int) currentAttackIndex) {
+        if (Math.signum(prevAttackIndex) != Math.signum(currentAttackIndex) || (int) (prevAttackIndex) != (int) currentAttackIndex) {
             return true;
         }
 
