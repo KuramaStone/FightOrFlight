@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.kuramastone.github"
-version = "1.0.1a"
+version = "1.0.2"
 
 architectury {
     platformSetupLoomIde()
@@ -54,6 +54,7 @@ dependencies {
         // Add each module as a dependency
         modImplementation(fabricApi.module(it, fabricApiVersion))
     }
+    modImplementation("me.lucko:fabric-permissions-api:0.3.1")?.let { include(it) }
 
     modImplementation("net.fabricmc:fabric-language-kotlin:1.12.3+kotlin.2.0.21")
 

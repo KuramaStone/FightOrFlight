@@ -1,19 +1,18 @@
 package com.github.kuramastone.fightOrFlight.utils;
 
 import com.cobblemon.mod.common.Cobblemon;
-import com.cobblemon.mod.common.api.abilities.Abilities;
 import com.cobblemon.mod.common.api.pokemon.stats.Stat;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.tags.CobblemonItemTags;
 import com.cobblemon.mod.common.api.types.ElementalType;
 import com.cobblemon.mod.common.battles.ai.StrongBattleAIKt;
-import com.cobblemon.mod.common.pokemon.OriginalTrainerType;
+import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+import com.cobblemon.mod.common.pokemon.Species;
 import com.cobblemon.mod.common.pokemon.evolution.requirements.LevelRequirement;
-import net.minecraft.server.level.ServerPlayer;
-import org.jetbrains.annotations.NotNull;
 
-import static java.lang.Math.*;
+import java.util.List;
+import java.util.Set;
 
 public class PokeUtils {
 
@@ -30,6 +29,25 @@ public class PokeUtils {
 
         // Final damage
         return baseDamage * modifier;
+    }
+
+    public static boolean doAnyAspectsMatch(List<String> targetAspects, PokemonEntity pe) {
+        if (targetAspects == null) {
+            return true;
+        }
+        Set<String> peAspects = pe.getPokemon().getAspects();
+
+        if(targetAspects.contains("shiny") && pe.getPokemon().getShiny()) {
+            return true;
+        }
+
+        for (String peAspect : peAspects) {
+            if(targetAspects.contains(peAspect)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static double calculateModifier(Pokemon attacker, Pokemon defender, ElementalType moveType, boolean useTypeEffectiveness) {
@@ -118,5 +136,9 @@ public class PokeUtils {
         // Final calculation
         double term4 = term1 * term2 * term3 + 1;
         return (int) Math.round(term4 * nonOtBonus * luckyEggMultiplier * evolutionMultiplier * affectionMultiplier * gimmickBoost);
+    }
+
+    public static boolean doesAnySpeciesMatch(List<String> speciesList, Species species) {
+        return speciesList.stream().anyMatch(it -> it.equalsIgnoreCase(species.getName()));
     }
 }

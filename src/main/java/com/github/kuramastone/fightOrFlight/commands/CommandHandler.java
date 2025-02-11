@@ -1,6 +1,8 @@
 package com.github.kuramastone.fightOrFlight.commands;
 
 import com.github.kuramastone.fightOrFlight.FOFApi;
+import com.github.kuramastone.fightOrFlight.utils.PermissionUtils;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.CommandSource;
@@ -25,7 +27,30 @@ public class CommandHandler {
             dispatcher.register(Commands.literal("pokewand")
                     .executes(this::pokewand)
             );
+            dispatcher.register(Commands.literal("fightorflight")
+                            .requires(it -> hasAdminPermission(it))
+                    .then(Commands.literal("reload")
+                            .executes(this::reload)));
+            
         });
+    }
+
+    private boolean hasAdminPermission(CommandSourceStack it) {
+        if(it.hasPermission(2)) {
+            return true;
+        }
+
+        if(!it.isPlayer()) {
+            return true;
+        }
+
+        return PermissionUtils.hasPermission(it.getPlayer(), "FightOrFlight.reload");
+    }
+
+    private int reload(CommandContext<CommandSourceStack> context) {
+        api.getConfigOptions().load();
+        context.getSource().sendSystemMessage(style("<green>Reloading FightOrFlight configs!"));
+        return Command.SINGLE_SUCCESS;
     }
 
     private int pokewand(CommandContext<CommandSourceStack> context) {

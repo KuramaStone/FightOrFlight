@@ -121,20 +121,20 @@ public abstract class PokeAttack {
             for (Pokemon pokemon : Cobblemon.INSTANCE.getStorage().getParty(serverPlayer)) {
                 if (!pokemon.getUuid().equals(attacker.getPokemon().getUuid())) {
                     if (pokemon.getHeldItem$common().is(CobblemonItemTags.EXPERIENCE_SHARE)) {
-                        double expMultiplier = Cobblemon.config.getExperienceShareMultiplier();
+                        double expMultiplier = Cobblemon.config.getExperienceShareMultiplier() * FightOrFlightMod.instance.getAPI().getConfigOptions().worldExpMultiplier;
                         int experience = PokeUtils.calculateExperience(attacker.getPokemon(), pokeDefender.getPokemon(), expMultiplier);
                         pokemon.addExperienceWithPlayer(serverPlayer, new SidemodExperienceSource(FightOrFlightMod.MODID), experience);
                     }
                 }
             }
 
-            double expMultiplier = 1.0;
+            double expMultiplier = FightOrFlightMod.instance.getAPI().getConfigOptions().worldExpMultiplier;
             if (attacker.getPokemon().getHeldItem$common().is(CobblemonItemTags.EXPERIENCE_SHARE))
                 expMultiplier = Cobblemon.config.getExperienceShareMultiplier();
             int experience = PokeUtils.calculateExperience(attacker.getPokemon(), pokeDefender.getPokemon(), expMultiplier);
             attacker.getPokemon().addExperienceWithPlayer(serverPlayer, new SidemodExperienceSource(FightOrFlightMod.MODID), experience);
         } else {
-            int experience = PokeUtils.calculateExperience(attacker.getPokemon(), pokeDefender.getPokemon(), 1.0);
+            int experience = PokeUtils.calculateExperience(attacker.getPokemon(), pokeDefender.getPokemon(), FightOrFlightMod.instance.getAPI().getConfigOptions().worldExpMultiplier);
             attacker.getPokemon().addExperience(new SidemodExperienceSource(FightOrFlightMod.MODID), experience);
         }
     }

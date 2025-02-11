@@ -1,5 +1,7 @@
-config-version: 3
+config-version: 4
 
+# Exp multiplier when defeating pokemon outside of battle
+world-exp-multiplier: 1.0
 # Pokemon normally provide exp and EVs when defeated outside of battle. This disabled that.
 disable-rewards-outside-battle: false
 
@@ -9,6 +11,14 @@ standard-aggression-timer-ticks: 3600
 
 # Set to true to disable player-owned pokemon from being aggressive without provocation
 owned-pokemon-aggression-disabled: false
+
+# aggression is disabled for these pokemon
+aggression-disabled-pokemon:
+  species-list:
+    - pikachu
+    - ralts
+  aspect-tags:
+    - shiny
 
 Messages:
   pokewand:
