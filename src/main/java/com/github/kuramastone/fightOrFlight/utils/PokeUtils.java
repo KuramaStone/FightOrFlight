@@ -10,6 +10,7 @@ import com.cobblemon.mod.common.battles.ai.StrongBattleAIKt;
 import com.cobblemon.mod.common.pokemon.OriginalTrainerType;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.evolution.requirements.LevelRequirement;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import static java.lang.Math.*;
@@ -90,8 +91,12 @@ public class PokeUtils {
         double term3 = Math.pow(((2.0 * opponentLevel) + 10) / (opponentLevel + victorLevel + 10), 2.5);
 
         // Checking if the Pokémon is the original trainer's
-        double nonOtBonus = (victorPokemon.getOriginalTrainerType() == OriginalTrainerType.PLAYER &&
-                victorPokemon.getOriginalTrainer().equals(victorPokemon.getOwnerPlayer().getStringUUID())) ? 1.0 : 1.5;
+        double nonOtBonus = 1.0;
+        if(victorPokemon.getOriginalTrainer() != null && victorPokemon.getOwnerUUID() != null) {
+            if(!victorPokemon.getOriginalTrainer().equals(victorPokemon.getOwnerUUID().toString())) {
+                nonOtBonus = 1.5;
+            }
+        }
 
         // Checking if the Pokémon is holding a Lucky Egg
         double luckyEggMultiplier = (victorPokemon.heldItem().is(CobblemonItemTags.LUCKY_EGG)) ?
