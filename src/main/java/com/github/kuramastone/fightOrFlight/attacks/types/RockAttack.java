@@ -107,9 +107,9 @@ public class RockAttack extends PokeAttack {
 //                                || z == (int) aabb.minZ || z == (int) aabb.maxZ)
                         FightOrFlightMod.debug("{}: blocksToPlace size: {}, layer size: {}, at x:{}/{} y:{}/{} z:{}/{}",
                                 uid, blocksToPlace.size(), layer.size(),
-                                x/ (int) aabb.maxX,
-                                y/ (int) aabb.maxY,
-                                z/ (int) aabb.maxZ);
+                                x, (int) aabb.maxX,
+                                y, (int) aabb.maxY,
+                                z, (int) aabb.maxZ);
                         layer.add(new BlockPos(x2, y, z2));
                     }
                 }

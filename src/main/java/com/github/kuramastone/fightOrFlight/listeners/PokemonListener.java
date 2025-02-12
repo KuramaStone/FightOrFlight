@@ -2,6 +2,8 @@ package com.github.kuramastone.fightOrFlight.listeners;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.github.kuramastone.fightOrFlight.FOFApi;
+import com.github.kuramastone.fightOrFlight.attacks.types.DragonAttack;
+import com.github.kuramastone.fightOrFlight.attacks.types.FireAttack;
 import com.github.kuramastone.fightOrFlight.entity.goals.*;
 import com.github.kuramastone.fightOrFlight.utils.ReflectionUtils;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -33,6 +35,19 @@ public class PokemonListener {
 
     public void register() {
         ServerEntityEvents.ENTITY_LOAD.register(this::onEntityLoad);
+        ServerEntityEvents.ENTITY_UNLOAD.register(this::onEntityUnload);
+    }
+
+    private void onEntityUnload(Entity entity, ServerLevel serverLevel) {
+        if (FireAttack.fireballsLaunched.containsValue(entity)) {
+            FireAttack.fireballsLaunched.remove(entity);
+        }
+        if (DragonAttack.fireballsLaunched.containsValue(entity)) {
+            DragonAttack.fireballsLaunched.remove(entity);
+        }
+
+        if (entity instanceof PokemonEntity pokemonEntity)
+            api.removeWrappedPokemon(pokemonEntity);
     }
 
     /**

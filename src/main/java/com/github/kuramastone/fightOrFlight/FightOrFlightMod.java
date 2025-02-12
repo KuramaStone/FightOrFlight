@@ -59,7 +59,7 @@ public class FightOrFlightMod implements ModInitializer {
         return new File(FabricLoader.getInstance().getConfigDir().toFile(), MODID);
     }
 
-    private static boolean inDebug = true;
+    private static boolean inDebug = false;
     public static void debug(String msg, Object... objects) {
         if(!inDebug)
             return;
