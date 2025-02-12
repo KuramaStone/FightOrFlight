@@ -3,6 +3,7 @@ package com.github.kuramastone.fightOrFlight.attacks.types;
 import com.cobblemon.mod.common.api.types.ElementalTypes;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.github.kuramastone.fightOrFlight.FOFApi;
+import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.AttackInstance;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -81,27 +83,34 @@ public class RockAttack extends PokeAttack {
 
         @Override
         protected void start() {
+            FightOrFlightMod.debug("Starting rock attack {}: ", uid);
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, maxTicks, 255, false, false, false));
 
             AABB aabb = target.getBoundingBox().inflate(0.1, 0, 0.1);
 
-            blocksToPlace.clear();
+            FightOrFlightMod.debug("{}: aabb: {}", uid, aabb);
+
             for (int y = (int) aabb.minY; y <= (int) aabb.maxY; y++) {
                 List<BlockPos> layer = new ArrayList<>();
                 for (int x = (int) aabb.minX; x <= (int) aabb.maxX; x++) {
                     for (int z = (int) aabb.minZ; z <= (int) aabb.maxZ; z++) {
                         int x2 = x;
                         int z2 = z;
-                        if (x < 0)
-                            x -= 1;
-                        if (z < 0)
+                        if (x2 < 0)
+                            x2 -= 1;
+                        if (z2 < 0)
                             z2 -= 1;
 
                         // only place edges, not the insides. just a slight performance boost.
 //                        if (x == (int) aabb.minX || x == (int) aabb.maxX
 //                                || y == (int) aabb.minY || y == (int) aabb.maxY
 //                                || z == (int) aabb.minZ || z == (int) aabb.maxZ)
-                            layer.add(new BlockPos(x2, y, z2));
+                        FightOrFlightMod.debug("{}: blocksToPlace size: {}, layer size: {}, at x:{}/{} y:{}/{} z:{}/{}",
+                                uid, blocksToPlace.size(), layer.size(),
+                                x/ (int) aabb.maxX,
+                                y/ (int) aabb.maxY,
+                                z/ (int) aabb.maxZ);
+                        layer.add(new BlockPos(x2, y, z2));
                     }
                 }
                 blocksToPlace.add(layer);

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.kuramastone.github"
-version = "1.0.2"
+version = "1.0.2b"
 
 architectury {
     platformSetupLoomIde()
