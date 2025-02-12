@@ -6,6 +6,7 @@ import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.attacks.AttackInstance;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
+import com.github.kuramastone.fightOrFlight.utils.EntityUtils;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -103,6 +104,7 @@ public class DragonAttack extends PokeAttack {
                             direction.normalize().multiply(attackSpeed, attackSpeed, attackSpeed));
                     fireball.setPos(fireball.getX(), this.pokemonEntity.getY(0.5) + 0.5, fireball.getZ());
                     fireballsLaunched.put(fireball, new FireAttack.FireballAttackData(pokemonEntity, maxAttacks, isSpecial, target));
+                    EntityUtils.entitiesToNotSave.add(fireball.getUUID());
                     this.pokemonEntity.level().addFreshEntity(fireball);
                     target.level().playSeededSound(null, pokemonEntity.getX(), pokemonEntity.getY(), pokemonEntity.getZ(),
                             SoundEvents.ENDER_DRAGON_SHOOT, SoundSource.HOSTILE, 1.0f, 0.5f, random.nextLong());

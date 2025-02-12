@@ -12,10 +12,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.DragonFireball;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.projectile.SmallFireball;
+import net.minecraft.world.phys.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -41,7 +39,8 @@ public class DragonFireballMixin {
         if (dataMap.containsKey(this)) {
             // override result
 
-            FireAttack.FireballAttackData data = dataMap.get(this);
+            DragonFireball fireball = (DragonFireball) (Object) this;
+            FireAttack.FireballAttackData data = dataMap.get(fireball);
 
             Entity defender = null;
             if (hitResult.getType() == HitResult.Type.ENTITY) {
@@ -51,8 +50,13 @@ public class DragonFireballMixin {
                     PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getDRAGON(), data.pokemonEntity, livingDefender);
                 }
             }
+            else if(hitResult.getType() == HitResult.Type.BLOCK){
+                // check if entity is close
+                if (data.targetEntity.distanceToSqr(fireball.position()) < 25)
+                    PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getDRAGON(), data.pokemonEntity, data.targetEntity);
+            }
 
-            DragonFireball fireball = ((DragonFireball) (Object) this);
+            //spawn effects
             fireball.level().playSeededSound(null, fireball.getX(), fireball.getY(), fireball.getZ(),
                     SoundEvents.DRAGON_FIREBALL_EXPLODE, SoundSource.HOSTILE,
                     1.0f, 1.0f, (long) (Math.random() * 100000L));
@@ -66,6 +70,7 @@ public class DragonFireballMixin {
                         (float) delta.x, (float) delta.y, (float) delta.z, 0.5f);
             }
 
+            // remove fireball
             fireball.remove(Entity.RemovalReason.DISCARDED);
             dataMap.remove(this);
             ci.cancel();
