@@ -28,6 +28,7 @@ public class ExtraAggressionGoal extends TargetGoal {
     private int unseenTicks;
     private int aggressionCounter = 0;
     private Random random;
+    private boolean isDisabled = false;
 
     public ExtraAggressionGoal(PokemonEntity pokemonEntity) {
         super(pokemonEntity, false);
@@ -37,6 +38,16 @@ public class ExtraAggressionGoal extends TargetGoal {
         resetAggression();
         // apply a random factor to the aggression on its initial creation
         aggressionCounter = (int) ((0.5 + random.nextDouble() * 0.5) * aggressionCounter);
+
+        FOFApi api = FightOrFlightMod.instance.getAPI();
+        // dont allow disabled species
+        if (PokeUtils.doesAnySpeciesMatch(api.getConfigOptions().aggressionDisabledSpecies, pokemonEntity.getPokemon().getSpecies())) {
+            isDisabled = true;
+        }
+        // dont allow disabled aspects
+        if (PokeUtils.doAnyAspectsMatch(api.getConfigOptions().aggressionDisabledAspects, pokemonEntity)) {
+            isDisabled = true;
+        }
     }
 
     @Override
@@ -134,12 +145,7 @@ public class ExtraAggressionGoal extends TargetGoal {
             }
         }
 
-        // dont allow disabled species
-        if (PokeUtils.doesAnySpeciesMatch(api.getConfigOptions().aggressionDisabledSpecies, pokemonEntity.getPokemon().getSpecies())) {
-            return false;
-        }
-        // dont allow disabled aspects
-        if (PokeUtils.doAnyAspectsMatch(api.getConfigOptions().aggressionDisabledAspects, pokemonEntity)) {
+        if(isDisabled) {
             return false;
         }
 
