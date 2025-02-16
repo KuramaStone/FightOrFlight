@@ -5,10 +5,11 @@ import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
+import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.utils.FleeUtils;
-import com.github.kuramastone.fightOrFlight.utils.Utils;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.SplittableRandom;
@@ -148,5 +149,21 @@ public class WrappedPokemon {
             return Pair.of(Stats.ATTACK, att);
         else
             return random.nextBoolean() ? Pair.of(Stats.SPECIAL_ATTACK, spa) : Pair.of(Stats.ATTACK, att);
+    }
+
+    public boolean isAllowedToAttackTarget() {
+        return isAllowedToAttackTarget(getTarget());
+    }
+
+    public boolean isAllowedToAttackTarget(LivingEntity target) {
+        if(pokemonEntity.getOwner() != null && target != null) {
+            if(pokemonEntity.getOwner() instanceof Player playerOwner) {
+                if (!PokeAttack.canAttack(playerOwner, target)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

@@ -15,8 +15,12 @@ import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.utils.*;
 import kotlin.Unit;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -32,6 +36,12 @@ public abstract class PokeAttack {
         this.api = api;
         this.elementalType = elementalType;
         this.isRanged = isRanged;
+    }
+
+    public static boolean canAttack(Player owner, LivingEntity target) {
+        InteractionResult result = AttackEntityCallback.EVENT.invoker()
+                .interact(owner, owner.level(), InteractionHand.MAIN_HAND, target, null);
+        return result == InteractionResult.PASS;
     }
 
     public static void calculateDamage(double multiplier, boolean isSpecial, ElementalType moveType, PokemonEntity attacker, LivingEntity defender) {

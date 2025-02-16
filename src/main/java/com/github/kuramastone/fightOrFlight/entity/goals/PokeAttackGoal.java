@@ -7,10 +7,8 @@ import com.github.kuramastone.fightOrFlight.entity.AttackState;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.level.pathfinder.Path;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -153,7 +151,7 @@ public class PokeAttackGoal extends Goal {
             return false;
         }
 
-        return !pokemonEntity.isDeadOrDying() && (targetMob != null && !targetMob.isDeadOrDying() && isTargetInRange());
+        return wrappedPokemon.isAllowedToAttackTarget() && !pokemonEntity.isDeadOrDying() && (targetMob != null && !targetMob.isDeadOrDying() && isTargetInRange());
     }
 
     private boolean isTargetInRange() {
@@ -162,7 +160,7 @@ public class PokeAttackGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return wrappedPokemon.getTarget() != null && !wrappedPokemon.getTarget().isDeadOrDying();
+        return wrappedPokemon.isAllowedToAttackTarget() && wrappedPokemon.getTarget() != null && !wrappedPokemon.getTarget().isDeadOrDying();
     }
 }
 

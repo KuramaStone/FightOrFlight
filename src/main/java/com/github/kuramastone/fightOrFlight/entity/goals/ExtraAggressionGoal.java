@@ -1,5 +1,6 @@
 package com.github.kuramastone.fightOrFlight.entity.goals;
 
+import com.cobblemon.mod.common.block.entity.PokemonPastureBlockEntity;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
@@ -108,6 +109,7 @@ public class ExtraAggressionGoal extends TargetGoal {
                 return !(player.gameMode.isSurvival() || player.gameMode.getGameModeForPlayer() == GameType.ADVENTURE);
             return false;
         });
+        nearby.removeIf(it -> !wrappedPokemon.isAllowedToAttackTarget(it));
 
         nearby.removeIf(it -> {
             if (it instanceof PokemonEntity queryPoke)
@@ -120,6 +122,8 @@ public class ExtraAggressionGoal extends TargetGoal {
                 }
             return false;
         });
+
+        nearby.removeIf(it -> !wrappedPokemon.isAllowedToAttackTarget(it));
 
 
         LivingEntity nearest = null;
@@ -141,6 +145,9 @@ public class ExtraAggressionGoal extends TargetGoal {
         // owned pokemon cant be extra aggressive if this is toggled
         if (api.getConfigOptions().ownedPokemonAggressionDisabled) {
             if (pokemonEntity.getOwner() != null) {
+                return false;
+            }
+            if(pokemonEntity.getTethering() != null) {
                 return false;
             }
         }

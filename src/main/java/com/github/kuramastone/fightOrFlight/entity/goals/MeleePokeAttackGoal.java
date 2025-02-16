@@ -48,8 +48,7 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
                     attack.perform(pokemonEntity, livingEntity);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -96,17 +95,18 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
     public boolean canContinueToUse() {
 
         // lose focus after 30 seconds
-        if(System.currentTimeMillis() > (timeOfAttackStart+30000)) {
+        if (System.currentTimeMillis() > (timeOfAttackStart + 30000)) {
             wrappedPokemon.setTarget(null);
             return false;
         }
-
         boolean notNull = wrappedPokemon.getTarget() != null;
+        boolean isAllowed = notNull && wrappedPokemon.isAllowedToAttackTarget();
         boolean inRange = notNull && isTargetInRange();
         boolean inMelee = notNull && wrappedPokemon.getAttackState() == AttackState.MELEE;
         boolean notDead = !mob.isDeadOrDying();
         boolean superCheck = super.canContinueToUse();
         return superCheck
+                && isAllowed
                 && inRange
                 && inMelee
                 && notDead;
@@ -114,8 +114,9 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
 
     @Override
     public boolean canUse() {
-        if(wrappedPokemon.getAttackState() != AttackState.MELEE)
+        if (wrappedPokemon.getAttackState() != AttackState.MELEE)
             return false;
+
 
         long l = this.mob.level().getGameTime();
         if (l - this.lastCanUseCheck < 20L) {
@@ -123,7 +124,10 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
         } else {
             this.lastCanUseCheck = l;
             LivingEntity livingEntity = this.wrappedPokemon.getTarget();
+
             if (livingEntity == null) {
+                return false;
+            } else if (!wrappedPokemon.isAllowedToAttackTarget(livingEntity)) {
                 return false;
             } else if (!livingEntity.isAlive()) {
                 return false;

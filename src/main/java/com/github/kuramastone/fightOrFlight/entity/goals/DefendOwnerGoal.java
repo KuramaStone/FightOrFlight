@@ -25,6 +25,10 @@ public class DefendOwnerGoal extends TargetGoal {
 
     @Override
     public boolean canContinueToUse() {
+        if(pokemonEntity.getOwner() == null) {
+            return false;
+        }
+
         LivingEntity livingEntity = pokemonEntity.getOwner().getLastHurtByMob();
         if (livingEntity == null) {
             livingEntity = this.targetMob;
