@@ -79,38 +79,45 @@ public class WandListener {
             LivingEntity targetEntity = getTargetEntity(player);
             List<PokemonEntity> nearbyPartyMembers = getNearbyPokemonOwnedBy(player);
 
-            if(!PokeAttack.canAttack(player, targetEntity)) {
-                return InteractionResultHolder.pass(inHand);
-            }
+            if (targetEntity != null) {
+                if (!PokeAttack.canAttack(player, targetEntity)) {
+                    return InteractionResultHolder.pass(inHand);
+                }
 
-            // dont attack your own pokemon
-            boolean success = false;
-            boolean didAlliesAlreadyHaveTargets = false;
-            if (!nearbyPartyMembers.contains(targetEntity)) {
-                for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
-                    if (pokemonEntity != targetEntity) {
-                        WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
-                        if (wrappedPokemon.getTarget() != null)
-                            didAlliesAlreadyHaveTargets = true;
-                        wrappedPokemon.setTarget(targetEntity, true);
-                        success = true;
+                // dont attack your own pokemon
+                boolean success = false;
+                if (!nearbyPartyMembers.contains(targetEntity)) {
+                    for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
+                        if (pokemonEntity != targetEntity) {
+                            WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
+                            wrappedPokemon.setTarget(targetEntity, true);
+                            success = true;
+                        }
                     }
                 }
-            }
-            if (success) {
-                if (targetEntity != null) {
+                if (success) {
                     player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.targeted")));
                     player.level().playSeededSound(player, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.HOSTILE,
                             1.0f, 1.0f, new Random().nextLong());
-                } else {
-                    // only send detarget message if they had a target
-                    if (didAlliesAlreadyHaveTargets) {
-                        player.level().playSeededSound(player, player.getX(), player.getY(), player.getZ(),
-                                SoundEvents.WOOD_HIT, SoundSource.HOSTILE,
-                                1.0f, 1.0f, new Random().nextLong());
-                        player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.detargeted")));
+                }
+            } else {
+                boolean doAlliesAlreadyHaveTargets = false;
+                if (!nearbyPartyMembers.contains(targetEntity)) {
+                    for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
+                        WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
+                        if (wrappedPokemon.getTarget() != null)
+                            doAlliesAlreadyHaveTargets = true;
+                        wrappedPokemon.setTarget(null);
                     }
+                }
+
+                // only send detarget message if they had a target
+                if (doAlliesAlreadyHaveTargets) {
+                    player.level().playSeededSound(player, player.getX(), player.getY(), player.getZ(),
+                            SoundEvents.WOOD_HIT, SoundSource.HOSTILE,
+                            1.0f, 1.0f, new Random().nextLong());
+                    player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.detargeted")));
                 }
             }
 
