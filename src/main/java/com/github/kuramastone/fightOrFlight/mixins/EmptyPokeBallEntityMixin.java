@@ -3,6 +3,7 @@ package com.github.kuramastone.fightOrFlight.mixins;
 import com.cobblemon.mod.common.entity.pokeball.EmptyPokeBallEntity;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.types.GhostAttack;
+import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
 import com.github.kuramastone.fightOrFlight.utils.ReflectionUtils;
 import com.github.kuramastone.fightOrFlight.utils.TickScheduler;
 import com.github.kuramastone.fightOrFlight.utils.Utils;
@@ -29,17 +30,12 @@ public class EmptyPokeBallEntityMixin {
             if (pokeball.getCapturingPokemon() != null) {
                 if (pokeball.getOwner() instanceof LivingEntity livingThrower) {
                     TickScheduler.scheduleLater(4, () -> {
-                        try {
-                            ReflectionUtils.setEntityInvulnerableTime(pokeball.getCapturingPokemon(), 0);
-                            pokeball.getCapturingPokemon().hurt(livingThrower.damageSources().mobAttack(livingThrower), 0.0f);
-                        } catch (IllegalAccessException e) {
-                            throw new RuntimeException(e);
-                        }
+                        WrappedPokemon wrapped = FightOrFlightMod.instance.getAPI().getWrappedPokemon(pokeball.getCapturingPokemon());
+                        wrapped.setTarget(livingThrower);
                     });
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
