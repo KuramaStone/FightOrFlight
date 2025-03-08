@@ -197,6 +197,11 @@ public class ExtraAggressionGoal extends TargetGoal {
             return false;
         else if (!pokemonEntity.getSensing().hasLineOfSight(livingEntity))
             return false;
+        else if (livingEntity instanceof PokemonEntity pokemonEntity) {
+            if(FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity)) {
+                return false;
+            }
+        }
         return true;
     }
 

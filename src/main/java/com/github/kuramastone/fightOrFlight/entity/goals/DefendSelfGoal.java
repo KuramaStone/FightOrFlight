@@ -101,12 +101,6 @@ public class DefendSelfGoal extends TargetGoal {
         }
     }
 
-    public DefendSelfGoal setAlertOthers(Class<?>... classs) {
-        this.alertSameType = true;
-        this.toIgnoreAlert = classs;
-        return this;
-    }
-
     @Override
     public void start() {
         this.mob.setTarget(this.mob.getLastHurtByMob());
@@ -164,5 +158,15 @@ public class DefendSelfGoal extends TargetGoal {
 
     protected void alertOther(Mob mob, LivingEntity livingEntity) {
         mob.setTarget(livingEntity);
+    }
+
+    @Override
+    protected boolean canAttack(@Nullable LivingEntity livingEntity, TargetingConditions targetingConditions) {
+        if (livingEntity instanceof PokemonEntity pokemonEntity) {
+            if(FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity)) {
+                return false;
+            }
+        }
+        return super.canAttack(livingEntity, targetingConditions);
     }
 }

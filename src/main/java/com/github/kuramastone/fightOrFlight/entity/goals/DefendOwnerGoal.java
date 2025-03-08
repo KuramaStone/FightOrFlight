@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.scores.Team;
+import org.jetbrains.annotations.Nullable;
 
 public class DefendOwnerGoal extends TargetGoal {
     private final PokemonEntity pokemonEntity;
@@ -91,4 +92,13 @@ public class DefendOwnerGoal extends TargetGoal {
         super.start();
     }
 
+    @Override
+    protected boolean canAttack(@Nullable LivingEntity livingEntity, TargetingConditions targetingConditions) {
+        if (livingEntity instanceof PokemonEntity livingPokemon) {
+            if(FightOrFlightMod.instance.getAPI().isPokemonProtected(livingPokemon)) {
+                return false;
+            }
+        }
+        return super.canAttack(livingEntity, targetingConditions);
+    }
 }

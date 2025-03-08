@@ -20,6 +20,14 @@ aggression-disabled-pokemon:
   aspect-tags:
     - shiny
 
+# These wild pokemon cant be targeted
+# So in this example, wild shiny pokemon cannot be targetted via wands or by random aggression from other pokemon
+# Shiny pokemon with owners will work as normal
+protected-pokemon:
+  aspect-tags:
+    - shiny
+
+
 Messages:
   pokewand:
     targeted: "<gold>[Target Selected]"

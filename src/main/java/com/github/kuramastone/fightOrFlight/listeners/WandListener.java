@@ -2,6 +2,7 @@ package com.github.kuramastone.fightOrFlight.listeners;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.github.kuramastone.fightOrFlight.FOFApi;
+import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -101,7 +102,8 @@ public class WandListener {
                             SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.HOSTILE,
                             1.0f, 1.0f, new Random().nextLong());
                 }
-            } else {
+            }
+            else {
                 boolean doAlliesAlreadyHaveTargets = false;
                 if (!nearbyPartyMembers.contains(targetEntity)) {
                     for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
@@ -142,8 +144,19 @@ public class WandListener {
         LivingEntity entity2 = null;
 
         List<Entity> nearby = level.getEntities(player, aabb, (_e) -> _e instanceof LivingEntity);
+
+        // remove protected entities
+        nearby.removeIf(it -> {
+            if (it instanceof PokemonEntity pokemonEntity) {
+                if (FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
         for (Entity entity3 : nearby) {
-            if(entity3 != player) {
+            if (entity3 != player) {
                 AABB entityBounds = entity3.getBoundingBox().inflate(tolerance);
                 Optional<Vec3> optional = entityBounds.clip(start, end);
                 if (entityBounds.contains(start)) {
@@ -151,7 +164,8 @@ public class WandListener {
                         entity2 = (LivingEntity) entity3;
                         tolerance = 0.0;
                     }
-                } else if (optional.isPresent()) {
+                }
+                else if (optional.isPresent()) {
                     entity2 = (LivingEntity) entity3;
                 }
             }
