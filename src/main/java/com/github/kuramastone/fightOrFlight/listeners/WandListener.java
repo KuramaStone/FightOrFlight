@@ -143,15 +143,17 @@ public class WandListener {
 
         List<Entity> nearby = level.getEntities(player, aabb, (_e) -> _e instanceof LivingEntity);
         for (Entity entity3 : nearby) {
-            AABB entityBounds = entity3.getBoundingBox().inflate(tolerance);
-            Optional<Vec3> optional = entityBounds.clip(start, end);
-            if (entityBounds.contains(start)) {
-                if (tolerance >= 0.0) {
+            if(entity3 != player) {
+                AABB entityBounds = entity3.getBoundingBox().inflate(tolerance);
+                Optional<Vec3> optional = entityBounds.clip(start, end);
+                if (entityBounds.contains(start)) {
+                    if (tolerance >= 0.0) {
+                        entity2 = (LivingEntity) entity3;
+                        tolerance = 0.0;
+                    }
+                } else if (optional.isPresent()) {
                     entity2 = (LivingEntity) entity3;
-                    tolerance = 0.0;
                 }
-            } else if (optional.isPresent()) {
-                entity2 = (LivingEntity) entity3;
             }
         }
 
