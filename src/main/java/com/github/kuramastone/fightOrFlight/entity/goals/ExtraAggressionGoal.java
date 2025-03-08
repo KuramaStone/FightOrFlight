@@ -70,24 +70,30 @@ public class ExtraAggressionGoal extends TargetGoal {
 
         if (livingEntity == null) {
             return false;
-        } else if (!this.mob.canAttack(livingEntity)) {
+        }
+        else if (!this.mob.canAttack(livingEntity)) {
             return false;
-        } else if (livingEntity.isDeadOrDying()) {
+        }
+        else if (livingEntity.isDeadOrDying()) {
             return false;
-        } else {
+        }
+        else {
             Team team = this.mob.getTeam();
             Team team2 = livingEntity.getTeam();
             if (team != null && team2 == team) {
                 return false;
-            } else {
+            }
+            else {
                 double d = this.getFollowDistance();
                 if (this.mob.distanceToSqr(livingEntity) > d * d) {
                     return false;
-                } else {
+                }
+                else {
                     if (this.mustSee) {
                         if (this.mob.getSensing().hasLineOfSight(livingEntity)) {
                             this.unseenTicks = 0;
-                        } else if (++this.unseenTicks > reducedTickDelay(this.unseenMemoryTicks)) {
+                        }
+                        else if (++this.unseenTicks > reducedTickDelay(this.unseenMemoryTicks)) {
                             return false;
                         }
                     }
@@ -102,7 +108,7 @@ public class ExtraAggressionGoal extends TargetGoal {
 
     private @Nullable LivingEntity getMobToTarget() {
         List<LivingEntity> nearby = pokemonEntity.level().getEntitiesOfClass(LivingEntity.class, pokemonEntity.getBoundingBox().inflate(16));
-        nearby.removeIf(it -> it.getUUID() == pokemonEntity.getOwnerUUID()); // remove owner
+        nearby.removeIf(it -> it.getUUID().equals(pokemonEntity.getOwnerUUID())); // remove owner
         nearby.removeIf(it -> it == pokemonEntity); // remove self
         nearby.removeIf(it -> {  // dont target creative/spectators
             if (it instanceof ServerPlayer player)
@@ -147,12 +153,12 @@ public class ExtraAggressionGoal extends TargetGoal {
             if (pokemonEntity.getOwner() != null) {
                 return false;
             }
-            if(pokemonEntity.getTethering() != null) {
+            if (pokemonEntity.getTethering() != null) {
                 return false;
             }
         }
 
-        if(isDisabled) {
+        if (isDisabled) {
             return false;
         }
 
@@ -197,8 +203,16 @@ public class ExtraAggressionGoal extends TargetGoal {
             return false;
         else if (!pokemonEntity.getSensing().hasLineOfSight(livingEntity))
             return false;
-        else if (livingEntity instanceof PokemonEntity pokemonEntity) {
-            if(FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity)) {
+        // cannot attack protected pokemon
+        else if (livingEntity instanceof PokemonEntity livingPokemon) {
+            if (FightOrFlightMod.instance.getAPI().isPokemonProtected(livingPokemon)) {
+                return false;
+            }
+
+        }
+        // cannot attack owner
+        else if (this.pokemonEntity.getOwnerUUID() != null) {
+            if (this.pokemonEntity.getOwnerUUID().equals(livingEntity.getUUID())) {
                 return false;
             }
         }
