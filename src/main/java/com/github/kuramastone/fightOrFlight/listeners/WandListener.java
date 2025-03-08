@@ -69,6 +69,9 @@ public class WandListener {
     private InteractionResultHolder<ItemStack> onItemUsed(Player player, Level level, InteractionHand interactionHand) {
         ItemStack inHand = player.getItemInHand(interactionHand);
 
+        if(api.isDisabledInWorld(level)) {
+            return InteractionResultHolder.pass(inHand);
+        }
 
         if (api.getWandManager().isWand(inHand)) {
             // update wand

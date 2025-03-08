@@ -68,6 +68,9 @@ public class DefendOwnerGoal extends TargetGoal {
     public boolean canUse() {
         if(pokemonEntity.getOwner() == null)
             return false;
+        if(FightOrFlightMod.instance.getAPI().isDisabledInWorld(this.pokemonEntity.level())) {
+            return false;
+        }
 
         LivingEntity livingEntity = this.pokemonEntity.getOwner();
         if (livingEntity == null) {

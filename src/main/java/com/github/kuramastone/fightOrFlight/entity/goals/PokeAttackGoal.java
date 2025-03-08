@@ -2,6 +2,7 @@ package com.github.kuramastone.fightOrFlight.entity.goals;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.github.kuramastone.fightOrFlight.FOFApi;
+import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.entity.AttackState;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
@@ -160,6 +161,9 @@ public class PokeAttackGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if(api.isDisabledInWorld(this.pokemonEntity.level())) {
+            return false;
+        }
         return wrappedPokemon.isAllowedToAttackTarget() && wrappedPokemon.getTarget() != null && !wrappedPokemon.getTarget().isDeadOrDying();
     }
 }

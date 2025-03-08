@@ -4,6 +4,7 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
 import com.github.kuramastone.fightOrFlight.utils.ConfigOptions;
 import com.github.kuramastone.fightOrFlight.utils.PokeUtils;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -49,7 +50,17 @@ public class FOFApi {
         this.wrappedPokemonEntityList.put(pokemonEntity, new WrappedPokemon(pokemonEntity));
     }
 
+    /**
+     * @return True if this pokemon cannot be targetted
+     */
     public boolean isPokemonProtected(PokemonEntity pokemonEntity) {
-        return pokemonEntity.getOwnerUUID() == null && PokeUtils.doAnyAspectsMatch(configOptions.aggressionDisabledAspects, pokemonEntity);
+        return pokemonEntity.getOwnerUUID() == null
+                && PokeUtils.doAnyAspectsMatch(configOptions.aggressionDisabledAspects, pokemonEntity);
     }
+
+    public boolean isDisabledInWorld(Level level) {
+        String world_name = level.dimension().location().toString();
+        return configOptions.disabledWorlds.contains(world_name);
+    }
+
 }

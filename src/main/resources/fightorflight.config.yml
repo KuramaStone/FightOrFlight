@@ -27,6 +27,10 @@ protected-pokemon:
   aspect-tags:
     - shiny
 
+# These worlds have this mod turned off.
+disabled:
+  worlds:
+    - minecraft:example_world
 
 Messages:
   pokewand:

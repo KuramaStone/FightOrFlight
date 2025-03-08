@@ -39,7 +39,8 @@ public class ConfigOptions {
     public double worldExpMultiplier;
     public List<String> aggressionDisabledSpecies;
     public List<String> aggressionDisabledAspects;
-    public List<String> protectedFromAggressionAspects;
+    public List<String> protectedAspects;
+    public List<String> disabledWorlds;
 
     public ItemStack pokeWand;
 
@@ -72,7 +73,8 @@ public class ConfigOptions {
             worldExpMultiplier = config.getDouble("world-exp-multiplier", 1.0);
             aggressionDisabledSpecies = config.getStringList("aggression-disabled-pokemon.species-list");
             aggressionDisabledAspects = config.getStringList("aggression-disabled-pokemon.aspect-tags");
-            protectedFromAggressionAspects = config.getStringList("protected-pokemon.aspect-tags");
+            protectedAspects = config.getStringList("protected-pokemon.aspect-tags");
+            disabledWorlds = config.getStringList("disabled.worlds");
 
 
         } catch (Exception e) {

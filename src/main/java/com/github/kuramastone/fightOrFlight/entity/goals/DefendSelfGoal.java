@@ -82,6 +82,9 @@ public class DefendSelfGoal extends TargetGoal {
 
     @Override
     public boolean canUse() {
+        if(FightOrFlightMod.instance.getAPI().isDisabledInWorld(this.mob.level())) {
+            return false;
+        }
         int i = this.mob.getLastHurtByMobTimestamp();
         LivingEntity livingEntity = this.mob.getLastHurtByMob();
         if (i != this.timestamp && livingEntity != null) {
@@ -164,6 +167,12 @@ public class DefendSelfGoal extends TargetGoal {
     protected boolean canAttack(@Nullable LivingEntity livingEntity, TargetingConditions targetingConditions) {
         if (livingEntity instanceof PokemonEntity pokemonEntity) {
             if(FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity)) {
+                return false;
+            }
+        }
+        // dont defend self from owner
+        if(this.wrappedPokemon.getPokemonEntity().getOwnerUUID() != null) {
+            if(this.wrappedPokemon.getPokemonEntity().getOwnerUUID().equals(livingEntity.getUUID())) {
                 return false;
             }
         }

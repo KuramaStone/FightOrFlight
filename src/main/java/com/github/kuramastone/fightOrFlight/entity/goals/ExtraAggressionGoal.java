@@ -158,6 +158,10 @@ public class ExtraAggressionGoal extends TargetGoal {
             }
         }
 
+        if(api.isDisabledInWorld(this.pokemonEntity.level())) {
+            return false;
+        }
+
         if (isDisabled) {
             return false;
         }
