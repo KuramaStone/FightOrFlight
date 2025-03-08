@@ -7,10 +7,12 @@ import com.github.kuramastone.fightOrFlight.attacks.AttackInstance;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
 import com.github.kuramastone.fightOrFlight.utils.EntityUtils;
+import com.github.kuramastone.fightOrFlight.utils.TickScheduler;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.DragonFireball;
 import net.minecraft.world.phys.Vec3;
@@ -105,6 +107,8 @@ public class DragonAttack extends PokeAttack {
                     fireball.setPos(fireball.getX(), this.pokemonEntity.getY(0.5) + 0.5, fireball.getZ());
                     fireballsLaunched.put(fireball, new FireAttack.FireballAttackData(pokemonEntity, maxAttacks, isSpecial, target));
                     EntityUtils.entitiesToNotSave.add(fireball.getUUID());
+                    // schedule removing this fireball in 10 seconds
+                    TickScheduler.scheduleLater(200L, () -> fireball.remove(Entity.RemovalReason.DISCARDED));
                     this.pokemonEntity.level().addFreshEntity(fireball);
                     target.level().playSeededSound(null, pokemonEntity.getX(), pokemonEntity.getY(), pokemonEntity.getZ(),
                             SoundEvents.ENDER_DRAGON_SHOOT, SoundSource.HOSTILE, 1.0f, 0.5f, random.nextLong());
