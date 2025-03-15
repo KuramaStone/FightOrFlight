@@ -41,6 +41,7 @@ public class ConfigOptions {
     public List<String> aggressionDisabledAspects;
     public List<String> protectedAspects;
     public List<String> disabledWorlds;
+    public double fleeBiasValue;
 
     public ItemStack pokeWand;
 
@@ -75,6 +76,7 @@ public class ConfigOptions {
             aggressionDisabledAspects = config.getStringList("aggression-disabled-pokemon.aspect-tags");
             protectedAspects = config.getStringList("protected-pokemon.aspect-tags");
             disabledWorlds = config.getStringList("disabled.worlds");
+            fleeBiasValue = config.getDouble("fight-or-flight-bias");
 
 
         } catch (Exception e) {

@@ -49,13 +49,10 @@ public class FairyAttack extends PokeAttack {
 
     }
 
-    /**
-     * Shoot fireballs while a beam of particles travels to the target
-     */
     private class PrivateAttackInstance extends AttackInstance {
 
         private final ParticleOptions particleMain;
-        private final int maxAttacks = 8;
+        private final int maxAttacks = 4;
         private final float power;
 
         public PrivateAttackInstance(PokeAttack pokeAttack, PokemonEntity pokemonEntity, LivingEntity target, CompletableFuture<Boolean> future, boolean isSpecial, int attackSpeed, float power) {

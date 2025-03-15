@@ -71,7 +71,7 @@ public class WrappedPokemon {
         // add random variation
         double rndVariation = 5;
 
-        double fleeScore = -2 + natureScore + abilityScore + relativeSize + levelScore + baseStatScore;
+        double fleeScore = FightOrFlightMod.instance.getAPI().getConfigOptions().fleeBiasValue + -2 + natureScore + abilityScore + relativeSize + levelScore + baseStatScore;
 
         double minValue = fleeScore - rndVariation;
         double maxValue = fleeScore + rndVariation;
@@ -84,7 +84,6 @@ public class WrappedPokemon {
             fleeLikelihood = (maxValue - Math.max(0, minValue)) / (maxValue - minValue);
 
         boolean willFlee = random.nextDouble() < fleeLikelihood;
-        willFlee = false;
 //        Utils.broadcast("==============================");
 //        Utils.broadcast("nature=%s, ability=%s, size=%.2f, level=%s, bst=%.2f".formatted(natureScore, abilityScore, relativeSize, levelScore, baseStatScore));
 //        Utils.broadcast("willFlee=%s, chanceToFlee=%s%%, range=[%.1f <%.1f> %.1f]".formatted(willFlee, (int) (fleeLikelihood * 100), minValue, fleeScore, maxValue));
