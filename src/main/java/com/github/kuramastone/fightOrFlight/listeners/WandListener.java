@@ -5,7 +5,6 @@ import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
-import com.github.kuramastone.fightOrFlight.utils.Utils;
 import dev.codedsakura.blossom.pvp.BlossomPVP;
 import dev.codedsakura.blossom.pvp.PVPController;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -87,8 +86,10 @@ public class WandListener {
 
             LivingEntity targetEntity = getTargetEntity(player);
 
+            List<PokemonEntity> nearbyPartyMembers = getNearbyPokemonOwnedBy(player);
+
             // support for blossom pvp
-            if (FabricLoader.getInstance().isModLoaded("blossom-pvp") && targetEntity instanceof Player targetPlayer) {
+            if (!nearbyPartyMembers.isEmpty() && FabricLoader.getInstance().isModLoaded("blossom-pvp") && targetEntity instanceof Player targetPlayer) {
                 PVPController pvpController = BlossomPVP.pvpController;
                 UUID self = player.getUUID();
                 UUID other = targetPlayer.getUUID();
@@ -97,7 +98,6 @@ public class WandListener {
                     return InteractionResultHolder.pass(inHand);
                 }
             }
-            List<PokemonEntity> nearbyPartyMembers = getNearbyPokemonOwnedBy(player);
 
             if (targetEntity != null) {
                 if (!PokeAttack.canAttack(player, targetEntity)) {
