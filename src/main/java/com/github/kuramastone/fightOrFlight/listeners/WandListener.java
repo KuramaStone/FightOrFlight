@@ -5,9 +5,13 @@ import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
+import com.github.kuramastone.fightOrFlight.utils.Utils;
+import dev.codedsakura.blossom.pvp.BlossomPVP;
+import dev.codedsakura.blossom.pvp.PVPController;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.NonNullList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,6 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 import static com.github.kuramastone.fightOrFlight.utils.Utils.style;
 
@@ -81,6 +86,17 @@ public class WandListener {
             player.setItemInHand(interactionHand, newWand);
 
             LivingEntity targetEntity = getTargetEntity(player);
+
+            // support for blossom pvp
+            if (FabricLoader.getInstance().isModLoaded("blossom-pvp") && targetEntity instanceof Player targetPlayer) {
+                PVPController pvpController = BlossomPVP.pvpController;
+                UUID self = player.getUUID();
+                UUID other = targetPlayer.getUUID();
+                if (!pvpController.isPVPEnabled(self) || !pvpController.isPVPEnabled(other)) {
+                    player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.no-pvp"))); //PvP is disabled for you or your target.
+                    return InteractionResultHolder.pass(inHand);
+                }
+            }
             List<PokemonEntity> nearbyPartyMembers = getNearbyPokemonOwnedBy(player);
 
             if (targetEntity != null) {

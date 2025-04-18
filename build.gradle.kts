@@ -29,6 +29,9 @@ repositories {
     maven(url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
     maven("https://maven.impactdev.net/repository/development/")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
+    flatDir {
+        dirs("libs")
+    }
 }
 
 val shade by configurations.creating {
@@ -75,6 +78,8 @@ dependencies {
     shade("dev.dejvokep:boosted-yaml:1.3.6")
 
     compileOnly("net.luckperms:api:5.4")
+    compileOnly(files("libs/BlossomLib.jar"))
+    compileOnly(files("libs/BlossomPVP.jar"))
 }
 
 tasks.getByName<Test>("test") {
