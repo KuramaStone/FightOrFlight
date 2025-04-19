@@ -89,12 +89,15 @@ public class WandListener {
             List<PokemonEntity> nearbyPartyMembers = getNearbyPokemonOwnedBy(player);
 
             // support for blossom pvp
-            if (!nearbyPartyMembers.isEmpty() && FabricLoader.getInstance().isModLoaded("blossom-pvp") && targetEntity instanceof Player targetPlayer) {
+            if (FabricLoader.getInstance().isModLoaded("blossom-pvp")) {
                 PVPController pvpController = BlossomPVP.pvpController;
                 UUID self = player.getUUID();
-                UUID other = targetPlayer.getUUID();
-                if (!pvpController.isPVPEnabled(self) || !pvpController.isPVPEnabled(other)) {
-                    player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.no-pvp"))); //PvP is disabled for you or your target.
+                UUID other = null;
+                if (targetEntity instanceof Player targetPlayer) other = targetPlayer.getUUID();
+                else if (targetEntity instanceof PokemonEntity targetPokemon) other = targetPokemon.getOwnerUUID();
+
+                if (other != null && (!pvpController.isPVPEnabled(self) || !pvpController.isPVPEnabled(other))) {
+                    player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.no-pvp"))); //PvP is disabled for you or your target('s owner)
                     return InteractionResultHolder.pass(inHand);
                 }
             }
