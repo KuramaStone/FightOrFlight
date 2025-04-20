@@ -170,9 +170,9 @@ public class WandListener {
         // remove protected entities
         nearby.removeIf(it -> {
             if (it instanceof PokemonEntity pokemonEntity) {
-                if (FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity)) {
-                    return true;
-                }
+                return FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity);
+            } else if (it instanceof Player) {
+                return FightOrFlightMod.instance.getAPI().isPvpDisabled();
             }
             return false;
         });
