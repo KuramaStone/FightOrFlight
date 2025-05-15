@@ -7,6 +7,8 @@
 
   ],
   "client": [
+    "SlotMixin",
+    "CrafterBlockEntityMixin"
   ],
   "server": [
     "DragonFireballMixin",
@@ -14,7 +16,9 @@
     "EntityMixin",
     "EvokerFangsMixin",
     "SmallFireballMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "SlotMixin",
+    "CrafterBlockEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
