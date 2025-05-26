@@ -115,6 +115,7 @@ public class WandListener {
                     for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
                         if (pokemonEntity != targetEntity) {
                             WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
+                            if (wrappedPokemon == null) continue;
                             wrappedPokemon.setTarget(targetEntity, true);
                             success = true;
                         }
@@ -132,6 +133,7 @@ public class WandListener {
                 if (!nearbyPartyMembers.contains(targetEntity)) {
                     for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
                         WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
+                        if (wrappedPokemon == null) continue;
                         if (wrappedPokemon.getTarget() != null)
                             doAlliesAlreadyHaveTargets = true;
                         wrappedPokemon.setTarget(null);
