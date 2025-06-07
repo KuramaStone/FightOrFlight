@@ -7,3 +7,5 @@ Every pokemon type has its own attack! Many attacks are split into ranged vs phy
 All damage is (mostly) battle accurate! Some niche factors like abilities may not always be included, but in normal situations, you can expect the damage to be accurate.
 
 Your pokemon will receive rewards for knocking out pokemon! The normal exp, EVs, and items will drop after the target pokemon is defeated.
+
+Pokemon may not take kindly when you fail to catch them! They may flee or even attack if they think they are strong enough!
