@@ -52,7 +52,7 @@ public class FairyAttack extends PokeAttack {
     private class PrivateAttackInstance extends AttackInstance {
 
         private final ParticleOptions particleMain;
-        private final int maxAttacks = 4;
+        private final int maxAttacks = 2;
         private final float power;
 
         public PrivateAttackInstance(PokeAttack pokeAttack, PokemonEntity pokemonEntity, LivingEntity target, CompletableFuture<Boolean> future, boolean isSpecial, int attackSpeed, float power) {

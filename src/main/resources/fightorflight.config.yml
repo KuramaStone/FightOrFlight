@@ -1,4 +1,4 @@
-config-version: 4
+config-version: 8
 
 # Exp multiplier when defeating pokemon outside of battle
 world-exp-multiplier: 1.0
@@ -11,6 +11,14 @@ standard-aggression-timer-ticks: 3600
 
 # Set to true to disable player-owned pokemon from being aggressive without provocation
 owned-pokemon-aggression-disabled: false
+# Set to true to prevent owned pokemon from being targetted
+owned-pokemon-cannot-be-targetted: true
+
+# What percentage of recoil damage the pokemon should take.
+recoil-percentage: 0.1
+
+# If true, players cannot be targetted
+allow-pvp: false
 
 #Attack/Flee bias when angered. Low values = more likely to attack. High values = more likely to flee. Try not changing this by more than +/- 2.
 fight-or-flight-bias: 0.0
@@ -18,10 +26,11 @@ fight-or-flight-bias: 0.0
 # aggression is disabled for these pokemon
 aggression-disabled-pokemon:
   species-list:
-    - pikachu
-    - ralts
+    - fakepokemonname
   aspect-tags:
     - shiny
+
+command-usage-delay-seconds: 300
 
 # These wild pokemon cant be targeted
 # So in this example, wild shiny pokemon cannot be targetted via wands or by random aggression from other pokemon
@@ -37,18 +46,19 @@ disabled:
 
 Messages:
   pokewand:
-    targeted: "<gold>[Target Selected]"
-    detargeted: "<gray>[Called Off Pokemon]"
-    received: "<green>You have received a <yellow>PokeWand<green>!"
+    targeted: <gold>[Target Selected]
+    detargeted: <gray>[Called Off Pokemon]
+    received: <green>You have received a <yellow>PokeWand<green>!
+    cooldown: <red>You have can't use this yet! {duration} remaining!
 
 # PokeWand
 # Player wands will update when they login or interact with the old wands
 pokewand:
-  item: "minecraft:bone"
-  customModelData: 0
-  name: "<yellow>PokeWand"
+  item: minecraft:blaze_rod
+  customModelData: 30001
+  name: <yellow>PokeWand
   lore:
-    - "Right click to target a pokemon!"
+    - Right click to target a pokemon!
 
 # These are the stats used for non-pokemon entities.
 # Type effectiveness is completely ignored for these entities.
@@ -56,12 +66,12 @@ pokewand:
 # MEW is a nice baseline as it has average defensive and offensive stats dont matter.
 entity-to-pokemon:
   minecraft:cow:
-    pokemon: "MEW lvl=10"
+    pokemon: MEW lvl=10
   minecraft:chicken:
-    pokemon: "MEW lvl=10"
+    pokemon: MEW lvl=10
   minecraft:sheep:
-    pokemon: "MEW lvl=10"
+    pokemon: MEW lvl=10
   minecraft:ender_dragon:
-    pokemon: "ARCEUS lvl=100"
+    pokemon: ARCEUS lvl=100
   default:
-    pokemon: "MEW lvl=50"
+    pokemon: MEW lvl=50

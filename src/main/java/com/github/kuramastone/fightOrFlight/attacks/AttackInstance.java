@@ -85,11 +85,11 @@ public abstract class AttackInstance implements Runnable {
     }
 
     protected void start() {
-        Move bestMove = PokeAttack.getHighestDamagingMoveOfType(pokemonEntity, pokeAttack.getElementalType());
 
         Set<String> animations = new HashSet<>();
         animations.add(isSpecial ? "special" : "physical");
         animations.add(pokeAttack.getElementalType().getName().toLowerCase());
+        Move bestMove = PokeAttack.getHighestDamagingMoveOfType(pokemonEntity.getPokemon(), pokeAttack.getElementalType(), isSpecial);
         if(bestMove != null) {
             animations.add(bestMove.getName().toLowerCase());
         }

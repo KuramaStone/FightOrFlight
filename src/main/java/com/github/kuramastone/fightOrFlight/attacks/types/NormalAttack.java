@@ -20,9 +20,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class NormalAttack extends PokeAttack {
 
-    public static Map<SmallFireball, FireballAttackData> fireballsLaunched = new HashMap<>();
-    ;
-
     public NormalAttack(FOFApi api, boolean isRanged) {
         super(api, ElementalTypes.INSTANCE.getNORMAL(), isRanged);
     }
@@ -50,10 +47,6 @@ public class NormalAttack extends PokeAttack {
         boolean isSpecial = wrappedPokemon.shouldUseSpecialAttack();
         new PrivateAttackInstance(this, pokemonEntity, target, future, isSpecial, attackSpeed).schedule();
 
-    }
-
-    public Map<SmallFireball, FireballAttackData> getFireballsLaunched() {
-        return fireballsLaunched;
     }
 
     /**

@@ -5,6 +5,8 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
+import com.github.kuramastone.fightOrFlight.event.AggressionResetEvent;
+import com.github.kuramastone.fightOrFlight.event.FOFEvents;
 import com.github.kuramastone.fightOrFlight.utils.PokeUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -243,8 +245,13 @@ public class ExtraAggressionGoal extends TargetGoal {
     }
 
     private void resetAggression() {
-        aggressionCounter = (int) (getDefaultAggression() * 100.0 / this.wrappedPokemon.getHigherAttackStat().getRight());
+        int defaultValue = (int) (getDefaultAggression() * 100.0 / this.wrappedPokemon.getHigherAttackStat().getRight());
+        AggressionResetEvent event = new AggressionResetEvent(wrappedPokemon, defaultValue);
+        FOFEvents.AGGRESSION_RESET.emit(event);
+
+        aggressionCounter = event.getAggressionTimer();
     }
+
 
     private int getDefaultAggression() {
         // 3 minutes

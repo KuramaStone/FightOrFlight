@@ -1,6 +1,8 @@
 package com.github.kuramastone.fightOrFlight.listeners;
 
+import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
@@ -17,6 +19,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -69,7 +72,7 @@ public class WandListener {
     private InteractionResultHolder<ItemStack> onItemUsed(Player player, Level level, InteractionHand interactionHand) {
         ItemStack inHand = player.getItemInHand(interactionHand);
 
-        if(api.isDisabledInWorld(level)) {
+        if (api.isDisabledInWorld(level)) {
             return InteractionResultHolder.pass(inHand);
         }
 
@@ -86,6 +89,13 @@ public class WandListener {
             if (targetEntity != null) {
                 if (!PokeAttack.canAttack(player, targetEntity)) {
                     return InteractionResultHolder.pass(inHand);
+                }
+
+                if (targetEntity instanceof PokemonEntity targetPokemonEntity) {
+                    // a forced targetting aspect ensures it can always be targeted
+                    if (!targetPokemonEntity.getPokemon().getAspects().contains("forced-targetting")  && targetPokemonEntity.getAspects().stream().anyMatch(it -> api.getConfigOptions().protectedAspects.contains(it))) {
+                        return InteractionResultHolder.pass(inHand);
+                    }
                 }
 
                 // dont attack your own pokemon
@@ -146,7 +156,7 @@ public class WandListener {
         double tolerance = 0.3;
         LivingEntity entity2 = null;
 
-        List<Entity> nearby = level.getEntities(player, aabb, (_e) -> _e instanceof LivingEntity);
+        List<Entity> nearby = level.getEntities(player, aabb, (it) -> it instanceof LivingEntity);
 
         // remove protected entities
         nearby.removeIf(it -> {
@@ -154,22 +164,38 @@ public class WandListener {
                 if (FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity)) {
                     return true;
                 }
+                // if owned pokemon cant be targetted and this pokemon has an owner, then dont include it
+                if(!pokemonEntity.getPokemon().getAspects().contains("fof-allowed") && ((FightOrFlightMod.instance.getAPI().getConfigOptions().ownedPokemonCannotBeTargetted) &&
+                        (pokemonEntity.getOwner() != null || pokemonEntity.getTethering() != null))) {
+                    return true;
+                }
             }
             return false;
         });
 
+        if(!api.getConfigOptions().allowPvP) {
+            nearby.removeIf(it -> it instanceof ServerPlayer);
+        }
+
         for (Entity entity3 : nearby) {
             if (entity3 != player) {
                 AABB entityBounds = entity3.getBoundingBox().inflate(tolerance);
-                Optional<Vec3> optional = entityBounds.clip(start, end);
-                if (entityBounds.contains(start)) {
-                    if (tolerance >= 0.0) {
-                        entity2 = (LivingEntity) entity3;
-                        tolerance = 0.0;
-                    }
+
+                // if it is a pokemonEntity, change the bounds to its entity dimension
+                if(entity3 instanceof PokemonEntity pokemonEntity) {
+                    EntityDimensions dims = pokemonEntity.getDimensions(pokemonEntity.getPose());
+                    entityBounds = dims.makeBoundingBox(pokemonEntity.position());
                 }
-                else if (optional.isPresent()) {
-                    entity2 = (LivingEntity) entity3;
+
+                double dist = 0.0;
+                Vec3 direction = end.subtract(start).normalize();
+                while (dist < maxDistance) {
+                    Vec3 positionOnLine = start.add(direction.multiply(dist, dist, dist));
+                    if(entityBounds.contains(positionOnLine)) {
+                        entity2 = (LivingEntity) entity3;
+                        break;
+                    }
+                    dist += tolerance;
                 }
             }
         }

@@ -6,6 +6,8 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
+import com.github.kuramastone.fightOrFlight.event.FOFEvents;
+import com.github.kuramastone.fightOrFlight.event.FightFleeChanceCalculation;
 import com.github.kuramastone.fightOrFlight.utils.FleeUtils;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -83,10 +85,16 @@ public class WrappedPokemon {
         else
             fleeLikelihood = (maxValue - Math.max(0, minValue)) / (maxValue - minValue);
 
+        FightFleeChanceCalculation event = new FightFleeChanceCalculation(this, target, fleeLikelihood);
+        FOFEvents.FLIGHT_FLEE_CHANCE_CALCULATION.emit(event);
+        fleeLikelihood = event.getFleeLikelihood();
+
         boolean willFlee = random.nextDouble() < fleeLikelihood;
 //        Utils.broadcast("==============================");
 //        Utils.broadcast("nature=%s, ability=%s, size=%.2f, level=%s, bst=%.2f".formatted(natureScore, abilityScore, relativeSize, levelScore, baseStatScore));
 //        Utils.broadcast("willFlee=%s, chanceToFlee=%s%%, range=[%.1f <%.1f> %.1f]".formatted(willFlee, (int) (fleeLikelihood * 100), minValue, fleeScore, maxValue));
+
+
 
         cachedDamageSource = lastDamageSource;
         willFleeFromCachedSource = willFlee;
@@ -155,6 +163,14 @@ public class WrappedPokemon {
     }
 
     public boolean isAllowedToAttackTarget(LivingEntity target) {
+        if(pokemonEntity.isBusy())
+            return false;
+        if(target instanceof PokemonEntity pokeTarget) {
+            if(pokeTarget.isBusy()) {
+                return false;
+            }
+        }
+
         if(pokemonEntity.getOwner() != null && target != null) {
             if(pokemonEntity.getOwner() instanceof Player playerOwner) {
                 if (!PokeAttack.canAttack(playerOwner, target)) {

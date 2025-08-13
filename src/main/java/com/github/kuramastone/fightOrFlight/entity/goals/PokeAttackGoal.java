@@ -128,7 +128,7 @@ public class PokeAttackGoal extends Goal {
         if (targetMob == null || targetMob.isDeadOrDying())
             return false;
 
-        if (System.currentTimeMillis() < timeOfLastAttack + 5000) {
+        if (System.currentTimeMillis() < timeOfLastAttack + 1500) {
             return false;
         }
 

@@ -2,18 +2,19 @@ package com.github.kuramastone.fightOrFlight.entity.goals;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.github.kuramastone.fightOrFlight.FOFApi;
-import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.entity.AttackState;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
 import com.github.kuramastone.fightOrFlight.utils.ReflectionUtils;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 
 public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.MeleeAttackGoal {
@@ -37,6 +38,13 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
     }
 
     @Override
+    public void start() {
+        super.start();
+        timeOfAttackStart = System.currentTimeMillis();
+        pokemonEntity.setTarget(wrappedPokemon.getTarget());
+    }
+
+    @Override
     protected void checkAndPerformAttack(LivingEntity livingEntity) {
         try {
             if (this.canPerformAttack(livingEntity)) {
@@ -46,6 +54,8 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
                 PokeAttack attack = api.getAttackManager().getAttack(wrappedPokemon, it -> !it.isRanged());
                 if (attack != null) {
                     attack.perform(pokemonEntity, livingEntity);
+                    this.mob.stopInPlace();
+                    this.mob.getNavigation().stop();
                 }
             }
         } catch (Exception e) {
@@ -65,17 +75,15 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
      * Sometimes entity get stuck slightly out of range to hit but close enough to not move anymore. This expands the box if they stop moving
      */
     private boolean isWithinMeleeAttackRange(PathfinderMob mob, LivingEntity livingEntity) {
-        if (new Vec3(mob.getDeltaMovement().x, 0, mob.getDeltaMovement().z).length() <= 0.00001)
-            return mob.getBoundingBox().inflate(1.5, 1.5, 1.5).intersects(livingEntity.getBoundingBox());
-        else
-            return mob.isWithinMeleeAttackRange(livingEntity);
-    }
-
-    @Override
-    public void start() {
-        super.start();
-        timeOfAttackStart = System.currentTimeMillis();
-        pokemonEntity.setTarget(wrappedPokemon.getTarget());
+        EntityDimensions dimensions = mob.getDimensions(mob.getPose());
+        AABB bounds = dimensions.makeBoundingBox(pokemonEntity.position());
+        // have a slightly higher range when standing still
+        if (new Vec3(mob.getDeltaMovement().x, 0, mob.getDeltaMovement().z).length() <= 0.00001) {
+            return bounds.inflate(1.67).intersects(livingEntity.getBoundingBox());
+        }
+        else {
+            return bounds.inflate(1.0).intersects(livingEntity.getBoundingBox());
+        }  
     }
 
     @Override
@@ -99,6 +107,7 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
             wrappedPokemon.setTarget(null);
             return false;
         }
+
         boolean notNull = wrappedPokemon.getTarget() != null;
         boolean isAllowed = notNull && wrappedPokemon.isAllowedToAttackTarget();
         boolean inRange = notNull && isTargetInRange();
@@ -117,7 +126,6 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
         if (wrappedPokemon.getAttackState() != AttackState.MELEE)
             return false;
 
-
         long l = this.mob.level().getGameTime();
         if (l - this.lastCanUseCheck < 20L) {
             return false;
@@ -132,7 +140,12 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
             } else if (!livingEntity.isAlive()) {
                 return false;
             } else {
-                Path path2 = this.mob.getNavigation().createPath(livingEntity, 0);
+                double accuracy = 0.0;
+                if(livingEntity instanceof PokemonEntity pokemonEntity) {
+                    accuracy = pokemonEntity.getDimensions(Pose.STANDING).width() * 0.7;
+                }
+
+                Path path2 = this.mob.getNavigation().createPath(livingEntity, (int) Math.ceil(accuracy));
                 try {
                     pathField.set(this, path2);
                 } catch (IllegalAccessException e) {

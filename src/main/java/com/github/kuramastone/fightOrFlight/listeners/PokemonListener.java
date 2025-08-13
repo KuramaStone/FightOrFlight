@@ -6,6 +6,7 @@ import com.github.kuramastone.fightOrFlight.attacks.types.DragonAttack;
 import com.github.kuramastone.fightOrFlight.attacks.types.FireAttack;
 import com.github.kuramastone.fightOrFlight.entity.goals.*;
 import com.github.kuramastone.fightOrFlight.utils.ReflectionUtils;
+import com.github.kuramastone.fightOrFlight.utils.TickScheduler;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.server.level.ServerLevel;
@@ -41,8 +42,8 @@ public class PokemonListener {
             DragonAttack.fireballsLaunched.remove(entity);
         }
 
-        if (entity instanceof PokemonEntity pokemonEntity)
-            api.removeWrappedPokemon(pokemonEntity);
+//        if (entity instanceof PokemonEntity pokemonEntity)
+//            api.removeWrappedPokemon(pokemonEntity);
     }
 
     /**
@@ -53,13 +54,15 @@ public class PokemonListener {
             try {
                 api.newWrappedPokemon(pokemonEntity);
                 GoalSelector goalSelector = ReflectionUtils.getMobGoalSelector(pokemonEntity);
-                goalSelector.addGoal(1, new PokeFleeGoal(api, pokemonEntity));
-                goalSelector.addGoal(1, new MeleePokeAttackGoal(api, pokemonEntity));
-                goalSelector.addGoal(2, new PokeAttackGoal(api, pokemonEntity));
-                goalSelector.addGoal(3, new DefendOwnerGoal(pokemonEntity));
-                goalSelector.addGoal(3, new DefendSelfGoal(pokemonEntity));
-                goalSelector.addGoal(4, new ExtraAggressionGoal(pokemonEntity));
-                //FightOrFlightMod.logger.info("{} has had their ai modified", pokemonEntity.getPokemon().getSpecies().getName());
+                if(goalSelector.getAvailableGoals().stream().noneMatch(it -> it.getGoal() instanceof PokeFleeGoal)) {
+                    goalSelector.addGoal(1, new PokeFleeGoal(api, pokemonEntity));
+                    goalSelector.addGoal(1, new MeleePokeAttackGoal(api, pokemonEntity));
+                    goalSelector.addGoal(2, new PokeAttackGoal(api, pokemonEntity));
+                    goalSelector.addGoal(3, new DefendOwnerGoal(pokemonEntity));
+                    goalSelector.addGoal(3, new DefendSelfGoal(pokemonEntity));
+                    goalSelector.addGoal(4, new ExtraAggressionGoal(pokemonEntity));
+                    //FightOrFlightMod.logger.info("{} has had their ai modified", pokemonEntity.getPokemon().getSpecies().getName());
+                }
 
             } catch (Exception e) {
                 throw new RuntimeException(e);

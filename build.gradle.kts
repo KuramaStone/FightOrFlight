@@ -4,10 +4,11 @@ plugins {
     id("architectury-plugin") version("3.4-SNAPSHOT")
     kotlin("jvm") version "1.9.23"
     id("com.gradleup.shadow") version "9.0.0-beta4"
+    id("maven-publish")
 }
 
-group = "com.kuramastone.github"
-version = "1.0.4"
+group = "com.github.kuramastone"
+version = "1.0.5"
 
 architectury {
     platformSetupLoomIde()
@@ -15,6 +16,7 @@ architectury {
 }
 
 loom {
+    accessWidenerPath = file("src/main/resources/fightorflight.accesswidener")
     silentMojangMappingsLicense()
 
     mixin {
@@ -101,5 +103,36 @@ tasks.shadowJar {
 tasks.processResources {
     filesMatching("fabric.mod.json") {
         expand(project.properties)
+    }
+}
+
+tasks.register<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allSource)
+}
+
+tasks.named("publishToMavenLocal") {
+    dependsOn(tasks.remapJar)
+}
+
+// configure the maven publication
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            groupId = project.group.toString() // ✅ required
+            artifactId = "fightorflight"
+            version = project.version.toString() // ✅ required
+            artifact(tasks.remapJar.get()) {
+                builtBy(tasks.remapJar)
+            }
+
+            // Optionally publish sources
+            artifact(tasks.named("sourcesJar").get())
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        mavenLocal()
     }
 }

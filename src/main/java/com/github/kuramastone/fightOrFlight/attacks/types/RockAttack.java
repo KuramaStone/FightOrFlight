@@ -21,6 +21,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
@@ -86,7 +87,8 @@ public class RockAttack extends PokeAttack {
             FightOrFlightMod.debug("Starting rock attack {}: ", uid);
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, maxTicks, 255, false, false, false));
 
-            AABB aabb = target.getBoundingBox().inflate(0.1, 0, 0.1);
+            AABB aabb = getLimitedInflatedAABB(target, 0.1, 0, 0.1, 5.0);
+            // dont let aabb be bigger than 5 on any axis
 
             FightOrFlightMod.debug("{}: aabb: {}", uid, aabb);
 
@@ -167,6 +169,20 @@ public class RockAttack extends PokeAttack {
                 EntityUtils.entitiesToNotSave.add(display.getUUID()); // guarantees that it wont wrongly save
             }
         }
+    }
+
+    public static AABB getLimitedInflatedAABB(Entity target, double inflateX, double inflateY, double inflateZ, double maxDimension) {
+        AABB inflated = target.getBoundingBox().inflate(inflateX, inflateY, inflateZ);
+
+        Vec3 center = inflated.getCenter();
+        double halfX = Math.min(inflated.getXsize() / 2, maxDimension / 2);
+        double halfY = Math.min(inflated.getYsize() / 2, maxDimension / 2);
+        double halfZ = Math.min(inflated.getZsize() / 2, maxDimension / 2);
+
+        return new AABB(
+                center.x - halfX, center.y - halfY, center.z - halfZ,
+                center.x + halfX, center.y + halfY, center.z + halfZ
+        );
     }
 
 }

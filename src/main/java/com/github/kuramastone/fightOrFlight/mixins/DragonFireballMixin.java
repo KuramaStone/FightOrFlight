@@ -45,15 +45,10 @@ public class DragonFireballMixin {
             Entity defender = null;
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 defender = ((EntityHitResult) hitResult).getEntity();
-
-                if (defender instanceof LivingEntity livingDefender) {
-                    PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getDRAGON(), data.pokemonEntity, livingDefender);
-                }
+                PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getDRAGON(), data.pokemonEntity, data.targetEntity);
             }
-            else if(hitResult.getType() == HitResult.Type.BLOCK){
-                // check if entity is close
-                if (data.targetEntity.distanceToSqr(fireball.position()) < 25)
-                    PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getDRAGON(), data.pokemonEntity, data.targetEntity);
+            else if (hitResult.getType() == HitResult.Type.BLOCK) {
+                PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getDRAGON(), data.pokemonEntity, data.targetEntity);
             }
 
             //spawn effects
@@ -62,7 +57,7 @@ public class DragonFireballMixin {
                     1.0f, 1.0f, (long) (Math.random() * 100000L));
 
             Vec3 delta = new Vec3(0, 0, 0);
-            if(defender != null)
+            if (defender != null)
                 delta = defender.getBoundingBox().getCenter().subtract(fireball.position());
             AABB aabb = fireball.getBoundingBox().inflate(0.25);
             for (int i = 0; i < 20; i++) {

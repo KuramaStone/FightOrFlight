@@ -1,6 +1,7 @@
 package com.github.kuramastone.fightOrFlight.utils;
 
 import com.cobblemon.mod.common.Cobblemon;
+import com.cobblemon.mod.common.CobblemonItems;
 import com.cobblemon.mod.common.api.pokemon.stats.Stat;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.tags.CobblemonItemTags;
@@ -10,6 +11,7 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.Species;
 import com.cobblemon.mod.common.pokemon.evolution.requirements.LevelRequirement;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.Set;
@@ -25,7 +27,7 @@ public class PokeUtils {
         double baseDamage = ((((((double) (2 * level) / 5) + 2) * power * (attack / defense)) / 50) + 2);
 
         // Modifier calculation
-        double modifier = calculateModifier(attacker, defender, moveType, useTypeEffectiveness);
+        double modifier = calculateModifier(attacker, defender, moveType, useTypeEffectiveness, isSpecial);
 
         // Final damage
         return baseDamage * modifier;
@@ -37,12 +39,12 @@ public class PokeUtils {
         }
         Set<String> peAspects = pe.getPokemon().getAspects();
 
-        if(targetAspects.contains("shiny") && pe.getPokemon().getShiny()) {
+        if (targetAspects.contains("shiny") && pe.getPokemon().getShiny()) {
             return true;
         }
 
         for (String peAspect : peAspects) {
-            if(targetAspects.contains(peAspect)) {
+            if (targetAspects.contains(peAspect)) {
                 return true;
             }
         }
@@ -50,7 +52,7 @@ public class PokeUtils {
         return false;
     }
 
-    private static double calculateModifier(Pokemon attacker, Pokemon defender, ElementalType moveType, boolean useTypeEffectiveness) {
+    private static double calculateModifier(Pokemon attacker, Pokemon defender, ElementalType moveType, boolean useTypeEffectiveness, boolean isSpecial) {
         double modifier = 1.0;
 
         // STAB
@@ -65,7 +67,22 @@ public class PokeUtils {
         // Random factor
         modifier *= getRandomFactor();
 
-        // Additional factors (abilities, items, weather, etc.) can be added here. We won't.
+        // Additional factors (abilities, items, weather, etc.) can be added here.
+        ItemStack heldItem = attacker.getHeldItem$common();
+        if (isSpecial) {
+            if (heldItem.getItem() == CobblemonItems.CHOICE_SPECS) {
+                modifier *= 1.5;
+            }
+        }
+        else {
+            if (heldItem.getItem() == CobblemonItems.CHOICE_BAND) {
+                modifier *= 1.5;
+            }
+        }
+
+        if(heldItem.getItem() == CobblemonItems.LIFE_ORB) {
+            modifier *= 1.3;
+        }
 
         return modifier;
     }
@@ -110,8 +127,8 @@ public class PokeUtils {
 
         // Checking if the Pokémon is the original trainer's
         double nonOtBonus = 1.0;
-        if(victorPokemon.getOriginalTrainer() != null && victorPokemon.getOwnerUUID() != null) {
-            if(!victorPokemon.getOriginalTrainer().equals(victorPokemon.getOwnerUUID().toString())) {
+        if (victorPokemon.getOriginalTrainer() != null && victorPokemon.getOwnerUUID() != null) {
+            if (!victorPokemon.getOriginalTrainer().equals(victorPokemon.getOwnerUUID().toString())) {
                 nonOtBonus = 1.5;
             }
         }

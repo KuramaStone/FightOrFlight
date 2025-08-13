@@ -36,12 +36,17 @@ public class ConfigOptions {
     public int baseAggressionTimer;
     public boolean disableRewardsOutsideBattle;
     public boolean ownedPokemonAggressionDisabled;
+    public boolean ownedPokemonCannotBeTargetted;
     public double worldExpMultiplier;
     public List<String> aggressionDisabledSpecies;
     public List<String> aggressionDisabledAspects;
     public List<String> protectedAspects;
     public List<String> disabledWorlds;
     public double fleeBiasValue;
+    public int commandDelayInSeconds;
+    public double recoilPercentage;
+
+    public boolean allowPvP;
 
     public ItemStack pokeWand;
 
@@ -71,12 +76,16 @@ public class ConfigOptions {
             baseAggressionTimer = config.getInt("standard-aggression-timer-ticks", 3600);
             disableRewardsOutsideBattle = config.getBoolean("disable-rewards-outside-battle", false);
             ownedPokemonAggressionDisabled = config.getBoolean("owned-pokemon-aggression-disabled", false);
+            ownedPokemonCannotBeTargetted = config.getBoolean("owned-pokemon-cannot-be-targetted", true);
             worldExpMultiplier = config.getDouble("world-exp-multiplier", 1.0);
             aggressionDisabledSpecies = config.getStringList("aggression-disabled-pokemon.species-list");
             aggressionDisabledAspects = config.getStringList("aggression-disabled-pokemon.aspect-tags");
             protectedAspects = config.getStringList("protected-pokemon.aspect-tags");
             disabledWorlds = config.getStringList("disabled.worlds");
             fleeBiasValue = config.getDouble("fight-or-flight-bias");
+            allowPvP = config.getBoolean("allow-pvp");
+            commandDelayInSeconds = config.getDouble("command-usage-delay-seconds").intValue();
+            recoilPercentage = config.getDouble("recoil-percentage", 0.1);
 
 
         } catch (Exception e) {
