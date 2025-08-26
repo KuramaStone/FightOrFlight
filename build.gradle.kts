@@ -25,12 +25,15 @@ loom {
 }
 
 val fabricApiVersion: String by project
+val blossomLibVersion: String by project
+val blossomPvpVersion: String by project
 
 repositories {
     mavenCentral()
     maven(url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
     maven("https://maven.impactdev.net/repository/development/")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
+    maven("https://maven.codedsakura.dev/releases")
 }
 
 val shade by configurations.creating {
@@ -77,6 +80,12 @@ dependencies {
     shade("dev.dejvokep:boosted-yaml:1.3.6")
 
     compileOnly("net.luckperms:api:5.4")
+    compileOnly("dev.codedsakura.blossom:blossom-lib:${blossomLibVersion}") {
+        exclude("xyz.nucleoid")
+    }
+    compileOnly("dev.codedsakura.blossom:blossom-pvp:${blossomPvpVersion}") {
+        exclude("xyz.nucleoid")
+    }
 }
 
 tasks.getByName<Test>("test") {

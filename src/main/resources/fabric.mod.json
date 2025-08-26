@@ -19,6 +19,9 @@
     "minecraft": "1.21.1",
     "cobblemon": ">=1.6.1"
   },
+  "suggests": {
+    "blossompvp": "2.0.5"
+  },
   "mixins": [
     "fightorfight.mixins.json"
   ]

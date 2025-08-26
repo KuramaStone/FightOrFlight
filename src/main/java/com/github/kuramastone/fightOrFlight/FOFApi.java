@@ -78,4 +78,13 @@ public class FOFApi {
         return configOptions.disabledWorlds.contains(world_name);
     }
 
+    /**
+     * Checks whether the PokeWand is prevented from working on other players
+     *
+     * @return True if targeting players with the PokeWand is disabled
+     */
+    public boolean isPvpDisabled() {
+        return configOptions.disableWandOnPlayers;
+    }
+
 }

@@ -36,7 +36,7 @@ public class ConfigOptions {
     public int baseAggressionTimer;
     public boolean disableRewardsOutsideBattle;
     public boolean ownedPokemonAggressionDisabled;
-    public boolean ownedPokemonCannotBeTargetted;
+    public boolean disableWandOnPlayers;
     public double worldExpMultiplier;
     public List<String> aggressionDisabledSpecies;
     public List<String> aggressionDisabledAspects;
@@ -76,7 +76,7 @@ public class ConfigOptions {
             baseAggressionTimer = config.getInt("standard-aggression-timer-ticks", 3600);
             disableRewardsOutsideBattle = config.getBoolean("disable-rewards-outside-battle", false);
             ownedPokemonAggressionDisabled = config.getBoolean("owned-pokemon-aggression-disabled", false);
-            ownedPokemonCannotBeTargetted = config.getBoolean("owned-pokemon-cannot-be-targetted", true);
+            disableWandOnPlayers = config.getBoolean("disable-wand-on-players", false);
             worldExpMultiplier = config.getDouble("world-exp-multiplier", 1.0);
             aggressionDisabledSpecies = config.getStringList("aggression-disabled-pokemon.species-list");
             aggressionDisabledAspects = config.getStringList("aggression-disabled-pokemon.aspect-tags");

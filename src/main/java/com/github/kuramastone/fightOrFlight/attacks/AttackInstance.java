@@ -5,15 +5,20 @@ import com.cobblemon.mod.common.api.moves.MoveTemplate;
 import com.cobblemon.mod.common.api.moves.Moves;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.net.messages.client.animation.PlayPosableAnimationPacket;
+import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
 import com.github.kuramastone.fightOrFlight.utils.ForgeTask;
 import com.github.kuramastone.fightOrFlight.utils.TickScheduler;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.codedsakura.blossom.pvp.BlossomPVP;
+import dev.codedsakura.blossom.pvp.PVPController;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -50,8 +55,29 @@ public abstract class AttackInstance implements Runnable {
         forgeTask = TickScheduler.scheduleRepeating(this, 0L, 1L);
     }
 
+    protected boolean isPvpAllowed() {
+        if (!FabricLoader.getInstance().isModLoaded("blossom-pvp")) return true;
+        PVPController pvpController = BlossomPVP.pvpController;
+        UUID self = pokemonEntity.getOwnerUUID();
+        UUID other = null;
+        if (target instanceof Player targetPlayer) other = targetPlayer.getUUID();
+        else if (target instanceof PokemonEntity pokeTarget) other = pokeTarget.getOwnerUUID();
+
+        if (other != null) return pvpController.isPVPEnabled(self) && pvpController.isPVPEnabled(other);
+        return true;
+    }
+
     @Override
     public void run() {
+        if (currentTick % 5 == 0 && !isPvpAllowed()) { // throttle to every 5 ticks for less load
+            this.forgeTask.isCancelled = true;
+            this.future.complete(true);
+
+            WrappedPokemon wrapped = pokeAttack.api.getWrappedPokemon(pokemonEntity);
+            if (wrapped != null) wrapped.setTarget(null);
+            return;
+        }
+
         try {
             if (currentTick == 0)
                 start();

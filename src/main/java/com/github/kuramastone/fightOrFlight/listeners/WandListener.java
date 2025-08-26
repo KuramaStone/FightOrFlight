@@ -1,15 +1,16 @@
 package com.github.kuramastone.fightOrFlight.listeners;
 
-import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
-import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
+import dev.codedsakura.blossom.pvp.BlossomPVP;
+import dev.codedsakura.blossom.pvp.PVPController;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.NonNullList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,7 +20,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -30,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 import static com.github.kuramastone.fightOrFlight.utils.Utils.style;
 
@@ -72,7 +73,7 @@ public class WandListener {
     private InteractionResultHolder<ItemStack> onItemUsed(Player player, Level level, InteractionHand interactionHand) {
         ItemStack inHand = player.getItemInHand(interactionHand);
 
-        if (api.isDisabledInWorld(level)) {
+        if(api.isDisabledInWorld(level)) {
             return InteractionResultHolder.pass(inHand);
         }
 
@@ -84,6 +85,7 @@ public class WandListener {
             player.setItemInHand(interactionHand, newWand);
 
             LivingEntity targetEntity = getTargetEntity(player);
+
             List<PokemonEntity> nearbyPartyMembers = getNearbyPokemonOwnedBy(player);
 
             if (targetEntity != null) {
@@ -98,12 +100,29 @@ public class WandListener {
                     }
                 }
 
+                // support for blossom pvp
+                if (FabricLoader.getInstance().isModLoaded("blossom-pvp")) {
+                    PVPController pvpController = BlossomPVP.pvpController;
+                    UUID self = player.getUUID();
+                    UUID other = null;
+                    if (targetEntity instanceof Player targetPlayer) other = targetPlayer.getUUID();
+                    else if (targetEntity instanceof PokemonEntity targetPokemon) other = targetPokemon.getOwnerUUID();
+
+                    if (other != null && (!pvpController.isPVPEnabled(self) || !pvpController.isPVPEnabled(other))) {
+                        if (nearbyPartyMembers.isEmpty() || nearbyPartyMembers.contains(targetEntity)) return InteractionResultHolder.pass(inHand);
+
+                        player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.no-pvp"))); //PvP is disabled for you or your target('s owner)
+                        return InteractionResultHolder.pass(inHand);
+                    }
+                }
+
                 // dont attack your own pokemon
                 boolean success = false;
                 if (!nearbyPartyMembers.contains(targetEntity)) {
                     for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
                         if (pokemonEntity != targetEntity) {
                             WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
+                            if (wrappedPokemon == null) continue;
                             wrappedPokemon.setTarget(targetEntity, true);
                             success = true;
                         }
@@ -121,6 +140,7 @@ public class WandListener {
                 if (!nearbyPartyMembers.contains(targetEntity)) {
                     for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
                         WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
+                        if (wrappedPokemon == null) continue;
                         if (wrappedPokemon.getTarget() != null)
                             doAlliesAlreadyHaveTargets = true;
                         wrappedPokemon.setTarget(null);
@@ -156,46 +176,30 @@ public class WandListener {
         double tolerance = 0.3;
         LivingEntity entity2 = null;
 
-        List<Entity> nearby = level.getEntities(player, aabb, (it) -> it instanceof LivingEntity);
+        List<Entity> nearby = level.getEntities(player, aabb, (_e) -> _e instanceof LivingEntity);
 
         // remove protected entities
         nearby.removeIf(it -> {
             if (it instanceof PokemonEntity pokemonEntity) {
-                if (FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity)) {
-                    return true;
-                }
-                // if owned pokemon cant be targetted and this pokemon has an owner, then dont include it
-                if(!pokemonEntity.getPokemon().getAspects().contains("fof-allowed") && ((FightOrFlightMod.instance.getAPI().getConfigOptions().ownedPokemonCannotBeTargetted) &&
-                        (pokemonEntity.getOwner() != null || pokemonEntity.getTethering() != null))) {
-                    return true;
-                }
+                return FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity);
+            } else if (it instanceof Player) {
+                return FightOrFlightMod.instance.getAPI().isPvpDisabled();
             }
             return false;
         });
 
-        if(!api.getConfigOptions().allowPvP) {
-            nearby.removeIf(it -> it instanceof ServerPlayer);
-        }
-
         for (Entity entity3 : nearby) {
             if (entity3 != player) {
                 AABB entityBounds = entity3.getBoundingBox().inflate(tolerance);
-
-                // if it is a pokemonEntity, change the bounds to its entity dimension
-                if(entity3 instanceof PokemonEntity pokemonEntity) {
-                    EntityDimensions dims = pokemonEntity.getDimensions(pokemonEntity.getPose());
-                    entityBounds = dims.makeBoundingBox(pokemonEntity.position());
-                }
-
-                double dist = 0.0;
-                Vec3 direction = end.subtract(start).normalize();
-                while (dist < maxDistance) {
-                    Vec3 positionOnLine = start.add(direction.multiply(dist, dist, dist));
-                    if(entityBounds.contains(positionOnLine)) {
+                Optional<Vec3> optional = entityBounds.clip(start, end);
+                if (entityBounds.contains(start)) {
+                    if (tolerance >= 0.0) {
                         entity2 = (LivingEntity) entity3;
-                        break;
+                        tolerance = 0.0;
                     }
-                    dist += tolerance;
+                }
+                else if (optional.isPresent()) {
+                    entity2 = (LivingEntity) entity3;
                 }
             }
         }
