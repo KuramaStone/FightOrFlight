@@ -5,9 +5,12 @@ import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
+import dev.codedsakura.blossom.pvp.BlossomPVP;
+import dev.codedsakura.blossom.pvp.PVPController;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.NonNullList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 import static com.github.kuramastone.fightOrFlight.utils.Utils.style;
 
@@ -81,11 +85,28 @@ public class WandListener {
             player.setItemInHand(interactionHand, newWand);
 
             LivingEntity targetEntity = getTargetEntity(player);
+
             List<PokemonEntity> nearbyPartyMembers = getNearbyPokemonOwnedBy(player);
 
             if (targetEntity != null) {
                 if (!PokeAttack.canAttack(player, targetEntity)) {
                     return InteractionResultHolder.pass(inHand);
+                }
+
+                // support for blossom pvp
+                if (FabricLoader.getInstance().isModLoaded("blossom-pvp")) {
+                    PVPController pvpController = BlossomPVP.pvpController;
+                    UUID self = player.getUUID();
+                    UUID other = null;
+                    if (targetEntity instanceof Player targetPlayer) other = targetPlayer.getUUID();
+                    else if (targetEntity instanceof PokemonEntity targetPokemon) other = targetPokemon.getOwnerUUID();
+
+                    if (other != null && (!pvpController.isPVPEnabled(self) || !pvpController.isPVPEnabled(other))) {
+                        if (nearbyPartyMembers.isEmpty() || nearbyPartyMembers.contains(targetEntity)) return InteractionResultHolder.pass(inHand);
+
+                        player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.no-pvp"))); //PvP is disabled for you or your target('s owner)
+                        return InteractionResultHolder.pass(inHand);
+                    }
                 }
 
                 // dont attack your own pokemon
@@ -94,6 +115,7 @@ public class WandListener {
                     for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
                         if (pokemonEntity != targetEntity) {
                             WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
+                            if (wrappedPokemon == null) continue;
                             wrappedPokemon.setTarget(targetEntity, true);
                             success = true;
                         }
@@ -111,6 +133,7 @@ public class WandListener {
                 if (!nearbyPartyMembers.contains(targetEntity)) {
                     for (PokemonEntity pokemonEntity : nearbyPartyMembers) {
                         WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
+                        if (wrappedPokemon == null) continue;
                         if (wrappedPokemon.getTarget() != null)
                             doAlliesAlreadyHaveTargets = true;
                         wrappedPokemon.setTarget(null);
@@ -151,9 +174,9 @@ public class WandListener {
         // remove protected entities
         nearby.removeIf(it -> {
             if (it instanceof PokemonEntity pokemonEntity) {
-                if (FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity)) {
-                    return true;
-                }
+                return FightOrFlightMod.instance.getAPI().isPokemonProtected(pokemonEntity);
+            } else if (it instanceof Player) {
+                return FightOrFlightMod.instance.getAPI().isPvpDisabled();
             }
             return false;
         });

@@ -12,6 +12,9 @@ standard-aggression-timer-ticks: 3600
 # Set to true to disable player-owned pokemon from being aggressive without provocation
 owned-pokemon-aggression-disabled: false
 
+# Set to true to disable the PokeWand from targeting other players
+disable-wand-on-players: false
+
 #Attack/Flee bias when angered. Low values = more likely to attack. High values = more likely to flee. Try not changing this by more than +/- 2.
 fight-or-flight-bias: 0.0
 
@@ -40,6 +43,7 @@ Messages:
     targeted: "<gold>[Target Selected]"
     detargeted: "<gray>[Called Off Pokemon]"
     received: "<green>You have received a <yellow>PokeWand<green>!"
+    no-pvp: "<red>PvP is disabled for you or your target."
 
 # PokeWand
 # Player wands will update when they login or interact with the old wands

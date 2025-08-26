@@ -31,7 +31,7 @@ public class EmptyPokeBallEntityMixin {
                 if (pokeball.getOwner() instanceof LivingEntity livingThrower) {
                     TickScheduler.scheduleLater(4, () -> {
                         WrappedPokemon wrapped = FightOrFlightMod.instance.getAPI().getWrappedPokemon(pokeball.getCapturingPokemon());
-                        wrapped.setTarget(livingThrower);
+                        if (wrapped != null) wrapped.setTarget(livingThrower);
                     });
                 }
             }
