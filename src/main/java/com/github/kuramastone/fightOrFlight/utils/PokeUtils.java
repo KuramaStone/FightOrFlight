@@ -6,11 +6,11 @@ import com.cobblemon.mod.common.api.pokemon.stats.Stat;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.tags.CobblemonItemTags;
 import com.cobblemon.mod.common.api.types.ElementalType;
-import com.cobblemon.mod.common.battles.ai.StrongBattleAIKt;
+import com.cobblemon.mod.common.battles.ai.strongBattleAI.AIUtility;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.Species;
-import com.cobblemon.mod.common.pokemon.evolution.requirements.LevelRequirement;
+import com.cobblemon.mod.common.pokemon.requirements.LevelRequirement;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -89,9 +89,9 @@ public class PokeUtils {
 
     private static double getTypeEffectiveness(ElementalType type, ElementalType primaryType, ElementalType secondaryType) {
 
-        double modifier = StrongBattleAIKt.getDamageMultiplier(type, primaryType);
+        double modifier = AIUtility.INSTANCE.getDamageMultiplier(type, primaryType);
         if (secondaryType != null) {
-            modifier *= StrongBattleAIKt.getDamageMultiplier(type, secondaryType);
+            modifier *= AIUtility.INSTANCE.getDamageMultiplier(type, secondaryType);
         }
 
         return modifier;
