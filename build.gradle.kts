@@ -1,8 +1,8 @@
 plugins {
     id("java")
-    id("dev.architectury.loom") version("1.7-SNAPSHOT")
+    id("dev.architectury.loom") version("1.10-SNAPSHOT")
     id("architectury-plugin") version("3.4-SNAPSHOT")
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "2.2.0"
     id("com.gradleup.shadow") version "9.0.0-beta4"
     id("maven-publish")
 }
@@ -73,7 +73,7 @@ dependencies {
     shade("net.kyori:adventure-text-serializer-plain:4.18.0")
     shade("net.kyori:adventure-text-serializer-gson:4.18.0")
 
-    modImplementation("com.cobblemon:fabric:1.6.1+1.21.1-SNAPSHOT")
+    modImplementation("com.cobblemon:fabric:1.7.0+1.21.1-SNAPSHOT")
     // command library
     //includeAndImplement("io.github.revxrsal:lamp.common:4.0.0-rc.2")
     //includeAndImplement("io.github.revxrsal:lamp.fabric:4.0.0-rc.2")
