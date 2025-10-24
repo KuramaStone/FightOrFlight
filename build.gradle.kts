@@ -59,7 +59,7 @@ dependencies {
         // Add each module as a dependency
         modImplementation(fabricApi.module(it, fabricApiVersion))
     }
-    modImplementation("me.lucko:fabric-permissions-api:0.3.1")?.let { include(it) }
+    modImplementation(include("me.lucko:fabric-permissions-api:0.3.1")!!)
 
     modImplementation("net.fabricmc:fabric-language-kotlin:1.12.3+kotlin.2.0.21")
 

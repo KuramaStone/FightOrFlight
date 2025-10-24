@@ -18,6 +18,7 @@ import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.event.FOFEvents;
 import com.github.kuramastone.fightOrFlight.event.PokeWandDamageEvent;
+import com.github.kuramastone.fightOrFlight.event.PokeWandDeathEvent;
 import com.github.kuramastone.fightOrFlight.utils.*;
 import kotlin.Unit;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -48,8 +49,8 @@ public abstract class PokeAttack {
 
     public static boolean canAttack(Player owner, LivingEntity target) {
         // always allow attack if it has this aspect
-        if(target instanceof PokemonEntity pokemonEntity) {
-            if(pokemonEntity.getAspects().contains("forced-targetting")) {
+        if (target instanceof PokemonEntity pokemonEntity) {
+            if (pokemonEntity.getAspects().contains("forced-targetting")) {
                 return true;
             }
         }
@@ -66,10 +67,10 @@ public abstract class PokeAttack {
             damage = calculateDamage(multiplier, isSpecial, moveType, attacker.getPokemon(), pokeDefender.getPokemon());
 
             int actualDamage = (int) Math.ceil(damage);
-            PokeWandDamageEvent event = new PokeWandDamageEvent(attacker, pokeDefender, actualDamage, multiplier, isSpecial, moveType);
-            FOFEvents.POKEWAND_DAMAGE_EVENT.emit(event);
-            if (!event.isCanceled()) {
-                actualDamage = event.getDamage();
+            PokeWandDamageEvent damageEvent = new PokeWandDamageEvent(attacker, pokeDefender, actualDamage, multiplier, isSpecial, moveType);
+            FOFEvents.POKEWAND_DAMAGE_EVENT.emit(damageEvent);
+            if (!damageEvent.isCanceled()) {
+                actualDamage = damageEvent.getDamage();
                 int oldHealth = pokeDefender.getPokemon().getCurrentHealth();
                 int newHealth = Math.max(oldHealth - actualDamage, 0);
                 pokeDefender.getPokemon().setCurrentHealth(newHealth);
@@ -79,7 +80,7 @@ public abstract class PokeAttack {
                     // deal recoil move to the user
                     Move chosenMove = getHighestDamagingMoveOfType(attacker.getPokemon(), moveType, isSpecial);
                     double recoil = getRecoilOf(chosenMove) * FightOrFlightMod.instance.getAPI().getConfigOptions().recoilPercentage;
-                    if(0.0 < recoil) {
+                    if (0.0 < recoil) {
                         if (!hasRecoilResistAbility(attacker.getPokemon())) {
                             double recoilDamage = damage * recoil;
                             int attackeroldHealth = attacker.getPokemon().getCurrentHealth();
@@ -93,9 +94,11 @@ public abstract class PokeAttack {
 
                 // receive rewards if ko'd
                 if (newHealth == 0) {
-                    if (oldHealth > 0)
+                    if (oldHealth > 0) {
                         if (!FightOrFlightMod.instance.getAPI().getConfigOptions().disableRewardsOutsideBattle)
                             provideKnockOutRewards(attacker, pokeDefender);
+                        FOFEvents.POKEWAND_DEATH_EVENT.emit(new PokeWandDeathEvent(attacker, defender, damageEvent));
+                    }
                 }
 
 
@@ -132,56 +135,56 @@ public abstract class PokeAttack {
     }
 
     private static double getRecoilOf(Move move) {
-        if(move == null)
+        if (move == null)
             return 0.0;
 
         String name = move.getTemplate().getName().toLowerCase();
-        if(name.equals("bravebird")) {
+        if (name.equals("bravebird")) {
             return 0.33;
         }
-        if(name.equals("doubleedge")) {
+        if (name.equals("doubleedge")) {
             return 0.33;
         }
-        if(name.equals("flareblitz")) {
+        if (name.equals("flareblitz")) {
             return 0.33;
         }
-        if(name.equals("headcharge")) {
+        if (name.equals("headcharge")) {
             return 0.25;
         }
-        if(name.equals("headsmash")) {
+        if (name.equals("headsmash")) {
             return 0.5;
         }
-        if(name.equals("lightofruin")) {
+        if (name.equals("lightofruin")) {
             return 0.5;
         }
-        if(name.equals("selfdestruct")) {
+        if (name.equals("selfdestruct")) {
             return 0.8;
         }
-        if(name.equals("explosion")) {
+        if (name.equals("explosion")) {
             return 0.8;
         }
-        if(name.equals("shadowend")) {
+        if (name.equals("shadowend")) {
             return 0.5;
         }
-        if(name.equals("shadowrush")) {
-            return 1.0/16;
+        if (name.equals("shadowrush")) {
+            return 1.0 / 16;
         }
-        if(name.equals("submission")) {
+        if (name.equals("submission")) {
             return 0.25;
         }
-        if(name.equals("takedown")) {
+        if (name.equals("takedown")) {
             return 0.25;
         }
-        if(name.equals("volttackle")) {
+        if (name.equals("volttackle")) {
             return 0.33;
         }
-        if(name.equals("wavecrash")) {
+        if (name.equals("wavecrash")) {
             return 0.33;
         }
-        if(name.equals("wildcharge")) {
+        if (name.equals("wildcharge")) {
             return 0.25;
         }
-        if(name.equals("woodhammer")) {
+        if (name.equals("woodhammer")) {
             return 0.33;
         }
 
@@ -296,12 +299,12 @@ public abstract class PokeAttack {
     }
 
     public static double getMoveFoFPower(Move move) {
-        if(move == null)
+        if (move == null)
             return 50;
         double power = Math.max(50, move.getPower());
         double accuracy = Math.max(50, move.getAccuracy());
         double accuracyPower = Mth.clamp(accuracy / 100.0, 0.0, 1.0);
-        if(accuracyPower == 0.0) {
+        if (accuracyPower == 0.0) {
             accuracyPower = 1.0;
         }
         return power * accuracyPower;

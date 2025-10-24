@@ -24,7 +24,15 @@ object FOFEvents {
     @JvmField
     val WAND_COMMAND_COOLDOWN = SimpleObservable<WandReceiveEvent>()
 
+    @JvmField
+    val POKEWAND_DEATH_EVENT = SimpleObservable<PokeWandDeathEvent>()
 }
+
+data class PokeWandDeathEvent(
+    val attacker: PokemonEntity,
+    val defender: LivingEntity,
+    val killingDamageEvent: PokeWandDamageEvent
+)
 
 data class PokeWandDamageEvent(
     val attacker: PokemonEntity,

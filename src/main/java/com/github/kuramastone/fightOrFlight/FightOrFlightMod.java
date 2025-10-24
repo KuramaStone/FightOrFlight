@@ -1,8 +1,10 @@
 package com.github.kuramastone.fightOrFlight;
 
+import com.cobblemon.mod.common.api.properties.CustomPokemonProperty;
 import com.github.kuramastone.fightOrFlight.commands.CommandHandler;
 import com.github.kuramastone.fightOrFlight.listeners.PokemonListener;
 import com.github.kuramastone.fightOrFlight.listeners.WandListener;
+import com.github.kuramastone.fightOrFlight.pokeproperties.AggressionBiasPropertyType;
 import com.github.kuramastone.fightOrFlight.utils.ReflectionUtils;
 import com.github.kuramastone.fightOrFlight.utils.TickScheduler;
 import net.fabricmc.api.ModInitializer;
@@ -41,6 +43,7 @@ public class FightOrFlightMod implements ModInitializer {
 
     private void onServerStarted(MinecraftServer server) {
         minecraftServer = server;
+        CustomPokemonProperty.Companion.register(new AggressionBiasPropertyType());
         api.init();
     }
 

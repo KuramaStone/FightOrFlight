@@ -8,11 +8,14 @@ import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.event.FOFEvents;
 import com.github.kuramastone.fightOrFlight.event.FightFleeChanceCalculation;
+import com.github.kuramastone.fightOrFlight.pokeproperties.AggressionBiasProperty;
 import com.github.kuramastone.fightOrFlight.utils.FleeUtils;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.SplittableRandom;
 
@@ -74,6 +77,7 @@ public class WrappedPokemon {
         double rndVariation = 5;
 
         double fleeScore = FightOrFlightMod.instance.getAPI().getConfigOptions().fleeBiasValue + -2 + natureScore + abilityScore + relativeSize + levelScore + baseStatScore;
+        fleeScore += getAggressionBias();
 
         double minValue = fleeScore - rndVariation;
         double maxValue = fleeScore + rndVariation;
@@ -100,6 +104,21 @@ public class WrappedPokemon {
         willFleeFromCachedSource = willFlee;
 
         return willFlee;
+    }
+
+    // returns the aggression bias of this pokemon if they have an AggressionBiasProperty
+    private double getAggressionBias() {
+        @Nullable AggressionBiasProperty aggressionBiasProperty = (AggressionBiasProperty) pokemonEntity.getPokemon().getCustomProperties()
+                .stream()
+                .filter(it -> it instanceof AggressionBiasProperty)
+                .findFirst()
+                .orElse(null);
+
+        if(aggressionBiasProperty != null) {
+            return aggressionBiasProperty.getBias();
+        }
+
+        return 0.0;
     }
 
     /**
@@ -176,6 +195,13 @@ public class WrappedPokemon {
                 if (!PokeAttack.canAttack(playerOwner, target)) {
                     return false;
                 }
+            }
+        }
+
+        // if they have this tag, then ONLY target players.
+        if(pokemonEntity.getPokemon().getAspects().contains("fof-players-only")) {
+            if(!(target instanceof ServerPlayer)) {
+                return false;
             }
         }
 
