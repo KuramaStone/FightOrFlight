@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.kuramastone"
-version = "1.1.1"
+version = "1.1.2"
 
 architectury {
     platformSetupLoomIde()
@@ -29,11 +29,18 @@ val blossomLibVersion: String by project
 val blossomPvpVersion: String by project
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven(url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
     maven("https://maven.impactdev.net/repository/development/")
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-    maven("https://maven.codedsakura.dev/releases")
+    maven(url = "https://maven.fabricmc.net/")
+    maven(url = "https://maven.enginehub.org/repo/")
+    maven("https://maven.nucleoid.xyz/") { name = "Nucleoid" }
+    maven ("https://oss.sonatype.org/content/repositories/snapshots/")
+    maven ("https://repo.kyori.net/repository/maven-public/")
+
+    maven("https://maven.blazing-coop.net/releases")
+    maven("https://repo.kyori.net/snapshots")
 }
 
 val shade by configurations.creating {
