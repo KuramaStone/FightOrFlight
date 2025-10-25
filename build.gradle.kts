@@ -41,6 +41,7 @@ repositories {
 
     maven("https://maven.blazing-coop.net/releases")
     maven("https://repo.kyori.net/snapshots")
+    maven("https://maven.codedsakura.dev/releases")
 }
 
 val shade by configurations.creating {
