@@ -54,9 +54,9 @@ configurations.implementation.get().extendsFrom(shade)
 dependencies {
     minecraft("net.minecraft:minecraft:1.21.1")
     mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:0.16.5")
+    modImplementation("net.fabricmc:fabric-loader:0.17.2")
 
-    modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
     setOf(
         "fabric-api-base",
         "fabric-command-api-v2",
@@ -104,7 +104,7 @@ tasks.remapJar {
     dependsOn(tasks.shadowJar) // Ensure shadowJar runs first
     inputFile.set(tasks.shadowJar.get().archiveFile) // Use the shadowed JAR for remapping
     archiveFileName.set("${project.name}-${project.version}.jar") // Rename output
-    destinationDirectory = file("run/mods")
+//    destinationDirectory = file("run/mods")
 }
 
 tasks.shadowJar {
