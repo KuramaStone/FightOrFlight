@@ -6,11 +6,11 @@ import com.cobblemon.mod.common.api.moves.Move;
 import com.cobblemon.mod.common.api.moves.MoveSet;
 import com.cobblemon.mod.common.api.moves.categories.DamageCategories;
 import com.cobblemon.mod.common.api.pokemon.experience.SidemodExperienceSource;
+import com.cobblemon.mod.common.api.pokemon.stats.SidemodEvSource;
 import com.cobblemon.mod.common.api.pokemon.stats.Stat;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.tags.CobblemonItemTags;
 import com.cobblemon.mod.common.api.types.ElementalType;
-import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.net.messages.client.animation.PlayPosableAnimationPacket;
 import com.cobblemon.mod.common.pokemon.Pokemon;
@@ -20,7 +20,6 @@ import com.github.kuramastone.fightOrFlight.event.FOFEvents;
 import com.github.kuramastone.fightOrFlight.event.PokeWandDamageEvent;
 import com.github.kuramastone.fightOrFlight.event.PokeWandDeathEvent;
 import com.github.kuramastone.fightOrFlight.utils.*;
-import kotlin.Unit;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -201,7 +200,6 @@ public abstract class PokeAttack {
     }
 
     private static void provideEVRewards(PokemonEntity attacker, PokemonEntity pokeDefender) {
-
         if (attacker.getOwner() instanceof ServerPlayer serverPlayer) {
             Map<Stat, Integer> evs = pokeDefender.getPokemon().getForm().getEvYield();
 
@@ -209,30 +207,31 @@ public abstract class PokeAttack {
             for (Pokemon pokemon : Cobblemon.INSTANCE.getStorage().getParty(serverPlayer)) {
                 if (!pokemon.getUuid().equals(attacker.getPokemon().getUuid())) {
                     if (attacker.getPokemon().getHeldItem$common().is(CobblemonItemTags.EXPERIENCE_SHARE)) {
-                        evs.forEach((stat, amount) -> pokemon.getEvs().add(stat, amount));
+                        evs.forEach((stat, amount) -> pokemon.getEvs().add(stat, amount, new SidemodEvSource(FightOrFlightMod.MODID, pokemon)));
                     }
                 }
             }
             ItemStack heldItem = attacker.getPokemon().getHeldItem$common();
-            evs.forEach((stat, amount) -> attacker.getPokemon().getEvs().add(stat, amount));
+            SidemodEvSource sideMod = new SidemodEvSource(FightOrFlightMod.MODID, attacker.getPokemon());
+            evs.forEach((stat, amount) -> attacker.getPokemon().getEvs().add(stat, amount, sideMod));
 
             if (heldItem.getItem() == CobblemonItems.POWER_WEIGHT) {
-                attacker.getPokemon().getEvs().add(Stats.HP, 8);
+                attacker.getPokemon().getEvs().add(Stats.HP, 8, sideMod);
             }
             else if (heldItem.getItem() == CobblemonItems.POWER_BRACER) {
-                attacker.getPokemon().getEvs().add(Stats.ATTACK, 8);
+                attacker.getPokemon().getEvs().add(Stats.ATTACK, 8, sideMod);
             }
             else if (heldItem.getItem() == CobblemonItems.POWER_BELT) {
-                attacker.getPokemon().getEvs().add(Stats.DEFENCE, 8);
+                attacker.getPokemon().getEvs().add(Stats.DEFENCE, 8, sideMod);
             }
             else if (heldItem.getItem() == CobblemonItems.POWER_LENS) {
-                attacker.getPokemon().getEvs().add(Stats.SPECIAL_ATTACK, 8);
+                attacker.getPokemon().getEvs().add(Stats.SPECIAL_ATTACK, 8, sideMod);
             }
             else if (heldItem.getItem() == CobblemonItems.POWER_BAND) {
-                attacker.getPokemon().getEvs().add(Stats.SPECIAL_DEFENCE, 8);
+                attacker.getPokemon().getEvs().add(Stats.SPECIAL_DEFENCE, 8, sideMod);
             }
             else if (heldItem.getItem() == CobblemonItems.POWER_ANKLET) {
-                attacker.getPokemon().getEvs().add(Stats.SPEED, 8);
+                attacker.getPokemon().getEvs().add(Stats.SPEED, 8, sideMod);
             }
 
 
