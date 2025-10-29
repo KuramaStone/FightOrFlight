@@ -9,6 +9,7 @@ import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.event.FOFEvents;
 import com.github.kuramastone.fightOrFlight.event.FightFleeChanceCalculation;
 import com.github.kuramastone.fightOrFlight.pokeproperties.AggressionBiasProperty;
+import com.github.kuramastone.fightOrFlight.pokeproperties.FightPlayersOnlyProperty;
 import com.github.kuramastone.fightOrFlight.pokeproperties.FightPlayersOnlyPropertyType;
 import com.github.kuramastone.fightOrFlight.utils.FleeUtils;
 import net.minecraft.server.level.ServerPlayer;
@@ -200,7 +201,7 @@ public class WrappedPokemon {
         }
 
         // if they have this tag, then ONLY target players.
-        if(new FightPlayersOnlyPropertyType.FightPlayersOnlyProperty().matches(pokemonEntity.getPokemon())) {
+        if(new FightPlayersOnlyProperty().matches(pokemonEntity.getPokemon())) {
             if(!(target instanceof ServerPlayer)) {
                 return false;
             }
