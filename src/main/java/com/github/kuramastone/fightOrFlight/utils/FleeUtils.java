@@ -13,13 +13,13 @@ public class FleeUtils {
     public static int getAbilityFleeScore(Pokemon pokemon) {
         AbilityTemplate ability = pokemon.getAbility().getTemplate();
 
-        if (ability == Abilities.INSTANCE.get("intimidate")) {
+        if (ability == Abilities.get("intimidate")) {
             return -1;
         }
-        if (ability == Abilities.INSTANCE.get("defiant")) {
+        if (ability == Abilities.get("defiant")) {
             return -1;
         }
-        if (ability == Abilities.INSTANCE.get("run_away")) {
+        if (ability == Abilities.get("run_away")) {
             return 2;
         }
 
