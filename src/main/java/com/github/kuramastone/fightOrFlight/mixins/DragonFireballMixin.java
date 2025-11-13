@@ -45,10 +45,10 @@ public class DragonFireballMixin {
             Entity defender = null;
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 defender = ((EntityHitResult) hitResult).getEntity();
-                PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getDRAGON(), data.pokemonEntity, data.targetEntity);
+                PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.DRAGON, data.pokemonEntity, data.targetEntity);
             }
             else if (hitResult.getType() == HitResult.Type.BLOCK) {
-                PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getDRAGON(), data.pokemonEntity, data.targetEntity);
+                PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.DRAGON, data.pokemonEntity, data.targetEntity);
             }
 
             //spawn effects

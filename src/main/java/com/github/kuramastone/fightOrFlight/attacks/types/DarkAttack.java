@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 public class DarkAttack extends PokeAttack {
 
     public DarkAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getDARK(), isRanged);
+        super(api, ElementalTypes.DARK, isRanged);
     }
 
     @Override

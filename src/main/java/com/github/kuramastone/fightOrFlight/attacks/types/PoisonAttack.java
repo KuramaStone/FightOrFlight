@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class PoisonAttack extends PokeAttack {
 
     public PoisonAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getPOISON(), isRanged);
+        super(api, ElementalTypes.POISON, isRanged);
     }
 
     @Override
