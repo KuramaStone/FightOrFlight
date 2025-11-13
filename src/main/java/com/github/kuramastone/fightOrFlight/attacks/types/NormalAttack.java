@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 public class NormalAttack extends PokeAttack {
 
     public NormalAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getNORMAL(), isRanged);
+        super(api, ElementalTypes.NORMAL, isRanged);
     }
 
     @Override

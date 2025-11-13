@@ -33,7 +33,7 @@ import java.util.concurrent.CompletableFuture;
 public class RockAttack extends PokeAttack {
 
     public RockAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getROCK(), isRanged);
+        super(api, ElementalTypes.ROCK, isRanged);
     }
 
     @Override

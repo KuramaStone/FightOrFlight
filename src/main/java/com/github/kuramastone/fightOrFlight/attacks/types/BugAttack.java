@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class BugAttack extends PokeAttack {
 
     public BugAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getBUG(), isRanged);
+        super(api, ElementalTypes.BUG, isRanged);
     }
 
     @Override

@@ -34,7 +34,7 @@ public class SmallFireballMixin {
             Entity defender = entityHitResult.getEntity();
             SmallFireball fireball = (SmallFireball) (Object) this;
             if (defender instanceof LivingEntity) {
-                PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getFIRE(), data.pokemonEntity, data.targetEntity);
+                PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.FIRE, data.pokemonEntity, data.targetEntity);
             }
 
             dataMap.remove(this);
@@ -53,7 +53,7 @@ public class SmallFireballMixin {
         if (dataMap.containsKey(this)) {
 
             FireAttack.FireballAttackData data = dataMap.get(this);
-            PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.INSTANCE.getFIRE(), data.pokemonEntity, data.targetEntity);
+            PokeAttack.calculateDamage(1.0 / data.fireballsSent, data.isSpecial, ElementalTypes.FIRE, data.pokemonEntity, data.targetEntity);
             ci.cancel();
         }
     }
