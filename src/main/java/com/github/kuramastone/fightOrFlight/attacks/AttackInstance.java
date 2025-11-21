@@ -103,7 +103,7 @@ public abstract class AttackInstance implements Runnable {
 
     protected void end() {
         List<MoveTemplate> moveTemplates = pokemonEntity.getPokemon().getMoveSet().getMoves().stream().map(it -> it.getTemplate()).toList();
-        boolean hasTeleport = moveTemplates.contains(Moves.INSTANCE.getByName("teleport"));
+        boolean hasTeleport = moveTemplates.contains(Moves.getByName("teleport"));
 
         if (hasTeleport) {
             pokemonEntity.randomTeleport(8, 4, 8, true);

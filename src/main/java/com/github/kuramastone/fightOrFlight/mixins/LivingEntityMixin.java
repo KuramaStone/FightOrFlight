@@ -47,7 +47,7 @@ public class LivingEntityMixin {
 
                         // replace damage with the equivalent damage of a 50bp move
                         Pokemon pokeAttacker = FightOrFlightMod.instance.getAPI().getConfigOptions().getPokemonEquivalent(livingAttacker.getType());
-                        float pokeDamage = (float) PokeUtils.calculatePokeAttackDamage(pokeAttacker, pokeDefender.getPokemon(), ElementalTypes.INSTANCE.getNORMAL(), 50, false, true);
+                        float pokeDamage = (float) PokeUtils.calculatePokeAttackDamage(pokeAttacker, pokeDefender.getPokemon(), ElementalTypes.NORMAL, 50, false, true);
                         float entityDamage = pokeDamage / pokeDefender.getPokemon().getMaxHealth() * pokeDefender.getMaxHealth();
                         f = entityDamage;
 

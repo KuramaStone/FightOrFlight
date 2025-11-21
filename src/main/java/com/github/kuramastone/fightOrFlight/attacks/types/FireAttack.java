@@ -26,7 +26,7 @@ public class FireAttack extends PokeAttack {
     public static Map<SmallFireball, FireballAttackData> fireballsLaunched = new HashMap<>();
 
     public FireAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getFIRE(), isRanged);
+        super(api, ElementalTypes.FIRE, isRanged);
     }
 
     @Override

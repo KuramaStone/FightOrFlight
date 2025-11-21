@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 public class FightingAttack extends PokeAttack {
 
     public FightingAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getFIGHTING(), isRanged);
+        super(api, ElementalTypes.FIGHTING, isRanged);
     }
 
     @Override

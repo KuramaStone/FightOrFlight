@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 public class GroundAttack extends PokeAttack {
 
     public GroundAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getGROUND(), isRanged);
+        super(api, ElementalTypes.GROUND, isRanged);
     }
 
     @Override
