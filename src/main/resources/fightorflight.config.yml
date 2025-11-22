@@ -1,7 +1,15 @@
-config-version: 4
+config-version: 5
+
+# Extras:
+# PokemonProperties for pokegive and developers:
+# - `aggression-bias=<value>`: Used to increase the likelihood of a pokemon attacking or fleeing
+# - `aggression-rate=<value>`: Used to modify how quickly the Pokemon is pushed to attacking/fleeing
+# - 'fof-damage`: Used to modify the damage of a Pokemon
+# - 'fof-player-only`: Used to force the pokemon to only target Players
 
 # Exp multiplier when defeating pokemon outside of battle
 world-exp-multiplier: 1.0
+
 # Pokemon normally provide exp and EVs when defeated outside of battle. This disabled that.
 disable-rewards-outside-battle: false
 

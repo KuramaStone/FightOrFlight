@@ -19,6 +19,8 @@ import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.event.FOFEvents;
 import com.github.kuramastone.fightOrFlight.event.PokeWandDamageEvent;
 import com.github.kuramastone.fightOrFlight.event.PokeWandDeathEvent;
+import com.github.kuramastone.fightOrFlight.pokeproperties.FofDamageProperty;
+import com.github.kuramastone.fightOrFlight.pokeproperties.FofDamagePropertyType;
 import com.github.kuramastone.fightOrFlight.utils.*;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,8 +66,9 @@ public abstract class PokeAttack {
         double damage;
         if (defender instanceof PokemonEntity pokeDefender) {
             damage = calculateDamage(multiplier, isSpecial, moveType, attacker.getPokemon(), pokeDefender.getPokemon());
+            double propertyModifier = Math.max(0.0, FofDamagePropertyType.getMultiplier(attacker.getPokemon()));
 
-            int actualDamage = (int) Math.ceil(damage);
+            int actualDamage = (int) Math.ceil(damage * propertyModifier);
             PokeWandDamageEvent damageEvent = new PokeWandDamageEvent(attacker, pokeDefender, actualDamage, multiplier, isSpecial, moveType);
             FOFEvents.POKEWAND_DAMAGE_EVENT.emit(damageEvent);
             if (!damageEvent.isCanceled()) {

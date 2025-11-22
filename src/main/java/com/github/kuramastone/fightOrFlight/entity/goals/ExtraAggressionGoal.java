@@ -1,12 +1,13 @@
 package com.github.kuramastone.fightOrFlight.entity.goals;
 
-import com.cobblemon.mod.common.block.entity.PokemonPastureBlockEntity;
+import com.cobblemon.mod.common.api.properties.CustomPokemonProperty;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.github.kuramastone.fightOrFlight.FOFApi;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
 import com.github.kuramastone.fightOrFlight.entity.WrappedPokemon;
 import com.github.kuramastone.fightOrFlight.event.AggressionResetEvent;
 import com.github.kuramastone.fightOrFlight.event.FOFEvents;
+import com.github.kuramastone.fightOrFlight.pokeproperties.AggressionRateProperty;
 import com.github.kuramastone.fightOrFlight.utils.PokeUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -19,6 +20,7 @@ import net.minecraft.world.scores.Team;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -160,7 +162,7 @@ public class ExtraAggressionGoal extends TargetGoal {
             }
         }
 
-        if(api.isDisabledInWorld(this.pokemonEntity.level())) {
+        if (api.isDisabledInWorld(this.pokemonEntity.level())) {
             return false;
         }
 
@@ -209,7 +211,7 @@ public class ExtraAggressionGoal extends TargetGoal {
             return false;
         else if (!pokemonEntity.getSensing().hasLineOfSight(livingEntity))
             return false;
-        // cannot attack protected pokemon
+            // cannot attack protected pokemon
         else if (livingEntity instanceof PokemonEntity livingPokemon) {
             if (FightOrFlightMod.instance.getAPI().isPokemonProtected(livingPokemon)) {
                 return false;
@@ -245,16 +247,27 @@ public class ExtraAggressionGoal extends TargetGoal {
     }
 
     private void resetAggression() {
-        int defaultValue = (int) (getDefaultAggression() * 100.0 / this.wrappedPokemon.getHigherAttackStat().getRight());
+        double aggressionModifier = getAggressionRateModifier();
+        int defaultValue = (int) ((getDefaultAggression() * 100.0 / this.wrappedPokemon.getHigherAttackStat().getRight()) / aggressionModifier);
         AggressionResetEvent event = new AggressionResetEvent(wrappedPokemon, defaultValue);
         FOFEvents.AGGRESSION_RESET.emit(event);
 
         aggressionCounter = event.getAggressionTimer();
     }
 
+    // Get the Pokemon's aggression modifier if present
+    private double getAggressionRateModifier() {
+        Optional<CustomPokemonProperty> optional = pokemonEntity.getPokemon().getCustomProperties().stream().filter(it -> it instanceof AggressionRateProperty).findFirst();
+
+        if(optional.isPresent()) {
+            return ((AggressionRateProperty) optional.get()).getMultiplier();
+        }
+
+        return 1.0;
+    }
+
 
     private int getDefaultAggression() {
-        // 3 minutes
         return FightOrFlightMod.instance.getAPI().getConfigOptions().baseAggressionTimer;
     }
 

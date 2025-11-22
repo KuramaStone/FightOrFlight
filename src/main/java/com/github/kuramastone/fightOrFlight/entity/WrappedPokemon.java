@@ -9,11 +9,12 @@ import com.github.kuramastone.fightOrFlight.attacks.PokeAttack;
 import com.github.kuramastone.fightOrFlight.event.FOFEvents;
 import com.github.kuramastone.fightOrFlight.event.FightFleeChanceCalculation;
 import com.github.kuramastone.fightOrFlight.pokeproperties.AggressionBiasProperty;
-import com.github.kuramastone.fightOrFlight.pokeproperties.FightPlayersOnlyProperty;
+import com.github.kuramastone.fightOrFlight.pokeproperties.FightPlayersOnlyPropertyType;
 import com.github.kuramastone.fightOrFlight.utils.FleeUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -183,6 +184,11 @@ public class WrappedPokemon {
     }
 
     public boolean isAllowedToAttackTarget(LivingEntity target) {
+        if(target instanceof Mob mob) {
+            if(mob.isNoAi()) {
+                return false;
+            }
+        }
         if(pokemonEntity.isBusy())
             return false;
         if(target instanceof PokemonEntity pokeTarget) {
@@ -200,10 +206,15 @@ public class WrappedPokemon {
         }
 
         // if they have this tag, then ONLY target players.
-        if(new FightPlayersOnlyProperty().matches(pokemonEntity.getPokemon())) {
+        if(FightPlayersOnlyPropertyType.matches(pokemonEntity.getPokemon())) {
             if(!(target instanceof ServerPlayer)) {
                 return false;
             }
+        }
+
+        if(target instanceof ServerPlayer serverPlayer) {
+            if(serverPlayer.isCreative() || serverPlayer.isSpectator())
+                return false;
         }
 
         return true;
