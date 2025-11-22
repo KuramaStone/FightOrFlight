@@ -5,7 +5,9 @@ import com.github.kuramastone.fightOrFlight.commands.CommandHandler;
 import com.github.kuramastone.fightOrFlight.listeners.PokemonListener;
 import com.github.kuramastone.fightOrFlight.listeners.WandListener;
 import com.github.kuramastone.fightOrFlight.pokeproperties.AggressionBiasPropertyType;
+import com.github.kuramastone.fightOrFlight.pokeproperties.AggressionRatePropertyType;
 import com.github.kuramastone.fightOrFlight.pokeproperties.FightPlayersOnlyPropertyType;
+import com.github.kuramastone.fightOrFlight.pokeproperties.FofDamagePropertyType;
 import com.github.kuramastone.fightOrFlight.utils.ReflectionUtils;
 import com.github.kuramastone.fightOrFlight.utils.TickScheduler;
 import net.fabricmc.api.ModInitializer;
@@ -45,7 +47,9 @@ public class FightOrFlightMod implements ModInitializer {
     private void onServerStarted(MinecraftServer server) {
         minecraftServer = server;
         CustomPokemonProperty.Companion.register(new AggressionBiasPropertyType());
+        CustomPokemonProperty.Companion.register(new AggressionRatePropertyType());
         CustomPokemonProperty.Companion.register(new FightPlayersOnlyPropertyType());
+        CustomPokemonProperty.Companion.register(new FofDamagePropertyType());
         api.init();
     }
 

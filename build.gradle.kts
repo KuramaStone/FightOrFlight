@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.kuramastone"
-version = "1.1.2"
+version = "1.1.3"
 
 architectury {
     platformSetupLoomIde()
@@ -104,7 +104,7 @@ tasks.remapJar {
     dependsOn(tasks.shadowJar) // Ensure shadowJar runs first
     inputFile.set(tasks.shadowJar.get().archiveFile) // Use the shadowed JAR for remapping
     archiveFileName.set("${project.name}-${project.version}.jar") // Rename output
-    destinationDirectory = file("run/mods")
+    //destinationDirectory = file("run/mods")
 }
 
 tasks.shadowJar {
