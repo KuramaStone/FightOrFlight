@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class GrassAttack extends PokeAttack {
 
     public GrassAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getGRASS(), isRanged);
+        super(api, ElementalTypes.GRASS, isRanged);
     }
 
     @Override

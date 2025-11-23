@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class WaterAttack extends PokeAttack {
 
     public WaterAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getWATER(), isRanged);
+        super(api, ElementalTypes.WATER, isRanged);
     }
 
     @Override
