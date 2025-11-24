@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 public class SteelAttack extends PokeAttack {
 
     public SteelAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getSTEEL(), isRanged);
+        super(api, ElementalTypes.STEEL, isRanged);
     }
 
     @Override

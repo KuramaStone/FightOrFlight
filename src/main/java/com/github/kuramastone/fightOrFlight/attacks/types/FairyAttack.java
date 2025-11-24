@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class FairyAttack extends PokeAttack {
 
     public FairyAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getFAIRY(), isRanged);
+        super(api, ElementalTypes.FAIRY, isRanged);
     }
 
     @Override

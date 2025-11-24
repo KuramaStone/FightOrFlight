@@ -26,7 +26,7 @@ public class GhostAttack extends PokeAttack {
     public static List<UUID> EVOKER_FANGS = new ArrayList<>();
 
     public GhostAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getGHOST(), isRanged);
+        super(api, ElementalTypes.GHOST, isRanged);
     }
 
     @Override

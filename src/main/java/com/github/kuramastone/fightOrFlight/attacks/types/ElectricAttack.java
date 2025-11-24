@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class ElectricAttack extends PokeAttack {
 
     public ElectricAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getELECTRIC(), isRanged);
+        super(api, ElementalTypes.ELECTRIC, isRanged);
     }
 
     @Override
