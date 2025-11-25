@@ -26,6 +26,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +54,8 @@ public abstract class PokeAttack {
                 return true;
             }
         }
+        // don't attack if the entity requires persistence
+        if (target instanceof Mob mob && mob.isPersistenceRequired()) return false;
         InteractionResult result = AttackEntityCallback.EVENT.invoker()
                 .interact(owner, owner.level(), InteractionHand.MAIN_HAND, target, null);
         return result == InteractionResult.PASS;
