@@ -52,6 +52,7 @@ Messages:
     targeted: "<gold>[Target Selected]"
     detargeted: "<gray>[Called Off Pokemon]"
     received: "<green>You have received a <yellow>PokeWand<green>!"
+    cooldown: "<red>You are still on cooldown for {duration}!"
 
 # PokeWand
 # Player wands will update when they login or interact with the old wands
