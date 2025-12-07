@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.kuramastone"
-version = "1.2.1"
+version = "1.2.2"
 
 architectury {
     platformSetupLoomIde()
@@ -81,7 +81,7 @@ dependencies {
     shade("net.kyori:adventure-text-serializer-plain:4.18.0")
     shade("net.kyori:adventure-text-serializer-gson:4.18.0")
 
-    modImplementation("com.cobblemon:fabric:1.7.0+1.21.1-SNAPSHOT")
+    modImplementation("com.cobblemon:fabric:1.7.1+1.21.1-SNAPSHOT")
     // command library
     //includeAndImplement("io.github.revxrsal:lamp.common:4.0.0-rc.2")
     //includeAndImplement("io.github.revxrsal:lamp.fabric:4.0.0-rc.2")
