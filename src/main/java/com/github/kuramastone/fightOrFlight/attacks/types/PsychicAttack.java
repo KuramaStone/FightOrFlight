@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 public class PsychicAttack extends PokeAttack {
 
     public PsychicAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getPSYCHIC(), isRanged);
+        super(api, ElementalTypes.PSYCHIC, isRanged);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class DragonAttack extends PokeAttack {
     public static Map<DragonFireball, FireAttack.FireballAttackData> fireballsLaunched = new HashMap<>();
 
     public DragonAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getDRAGON(), isRanged);
+        super(api, ElementalTypes.DRAGON, isRanged);
     }
 
     @Override

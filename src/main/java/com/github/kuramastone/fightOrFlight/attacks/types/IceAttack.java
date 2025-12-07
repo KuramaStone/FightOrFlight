@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 public class IceAttack extends PokeAttack {
 
     public IceAttack(FOFApi api, boolean isRanged) {
-        super(api, ElementalTypes.INSTANCE.getICE(), isRanged);
+        super(api, ElementalTypes.ICE, isRanged);
     }
 
     @Override
