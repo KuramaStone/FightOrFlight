@@ -297,7 +297,11 @@ public abstract class AttackInstance implements Runnable {
     }
 
     protected void spawnParticleAt(ParticleOptions particleOptions, Vec3 vec, int count, double dx, double dy, double dz, double speed) {
-        ((ServerLevel) target.level()).sendParticles(particleOptions, vec.x, vec.y, vec.z, count, dx, dy, dz, speed);
+        ServerLevel level = ((ServerLevel) target.level());
+        // force each client to render it. Client will handle filtering
+        level.players().forEach(player -> {
+            level.sendParticles(player, particleOptions, true, vec.x, vec.y, vec.z, count, dx, dy, dz, speed);
+        });
     }
 
     protected abstract void tick();
