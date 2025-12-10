@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.SplittableRandom;
 
+import static com.github.kuramastone.fightOrFlight.entity.WrappedPokemon.calculateMovementSpeed;
+
 /**
  * Flee last attacker if they are intimidating
  */
@@ -37,9 +39,6 @@ public class PokeFleeGoal extends PanicGoal {
         getFlags().addAll(List.of(Flag.MOVE, Flag.LOOK, Flag.JUMP, Flag.TARGET));
     }
 
-    private static double calculateMovementSpeed(PokemonEntity pokemonEntity) {
-        return Math.max(1.5, Math.sqrt(pokemonEntity.getPokemon().getSpeed()) / 7);
-    }
 
     @Override
     public void start() {
@@ -80,6 +79,8 @@ public class PokeFleeGoal extends PanicGoal {
 
     @Override
     public boolean shouldPanic() {
-        return super.shouldPanic() && wrappedPokemon.shouldFlee(pokemonEntity.getLastDamageSource(), pokemonEntity.getLastAttacker());
+        return super.shouldPanic()
+                && !api.isDisabledInWorld(wrappedPokemon.getPokemonEntity().level())
+                && wrappedPokemon.shouldFlee(pokemonEntity.getLastDamageSource(), pokemonEntity.getLastAttacker());
     }
 }

@@ -64,7 +64,9 @@ public abstract class PokeAttack {
     }
 
     public static void calculateDamage(double multiplier, boolean isSpecial, ElementalType moveType, PokemonEntity attacker, LivingEntity defender) {
-        resetInvulnerabilityTicks(defender);
+        // dont reset player ticks to give them a chance as a human
+        if (!(defender instanceof Player))
+            resetInvulnerabilityTicks(defender);
 
         double damage;
         if (defender instanceof PokemonEntity pokeDefender) {

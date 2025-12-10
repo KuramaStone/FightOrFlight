@@ -219,4 +219,10 @@ public class WrappedPokemon {
 
         return true;
     }
+
+    public static double calculateMovementSpeed(PokemonEntity pokemonEntity) {
+        return Math.max(0.6, Math.min(2.0, Math.log(pokemonEntity.getPokemon().getSpeed()) * 0.6));
+    }
+
+
 }

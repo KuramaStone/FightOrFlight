@@ -13,6 +13,8 @@ import net.minecraft.world.level.pathfinder.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import static com.github.kuramastone.fightOrFlight.entity.WrappedPokemon.calculateMovementSpeed;
+
 public class PokeAttackGoal extends Goal {
 
     private final FOFApi api;
@@ -120,9 +122,6 @@ public class PokeAttackGoal extends Goal {
         pokemonEntity.getNavigation().moveTo(path, calculateMovementSpeed(pokemonEntity));
     }
 
-    private static double calculateMovementSpeed(PokemonEntity pokemonEntity) {
-        return Math.max(1.0, pokemonEntity.getSpeed() / 150.0);
-    }
 
     private boolean shouldAttemptAttack() {
         if (targetMob == null || targetMob.isDeadOrDying())
