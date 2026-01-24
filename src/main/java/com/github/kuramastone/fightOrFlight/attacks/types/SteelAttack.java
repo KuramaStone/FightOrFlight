@@ -115,7 +115,7 @@ public class SteelAttack extends PokeAttack {
             if (fallingBlock != null && !fallingBlock.isRemoved()) {
                 // drop anvil on entity
                 Vec3 newPos = interpolate(start, target.position(), (float) currentTick / maxTicks);
-                FightOrFlightMod.logger.info("{}: {}", (float)  currentTick / maxTicks, newPos.y);
+//                FightOrFlightMod.logger.info("{}: {}", (float)  currentTick / maxTicks, newPos.y);
                 fallingBlock.setPos(newPos);
             }
 

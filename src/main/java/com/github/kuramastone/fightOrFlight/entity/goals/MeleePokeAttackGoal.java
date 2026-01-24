@@ -17,6 +17,8 @@ import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Field;
 
+import static com.github.kuramastone.fightOrFlight.entity.WrappedPokemon.calculateMovementSpeed;
+
 public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.MeleeAttackGoal {
 
     private final FOFApi api;
@@ -31,10 +33,6 @@ public class MeleePokeAttackGoal extends net.minecraft.world.entity.ai.goal.Mele
         this.api = api;
         this.pokemonEntity = pokemonEntity;
         this.wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
-    }
-
-    private static double calculateMovementSpeed(PokemonEntity pokemonEntity) {
-        return Math.max(1.0, (double) pokemonEntity.getPokemon().getSpeed() / 150);
     }
 
     @Override

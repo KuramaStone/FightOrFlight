@@ -1,4 +1,4 @@
-config-version: 5
+config-version: 6
 
 # Extras:
 # PokemonProperties for pokegive and developers:
@@ -19,6 +19,9 @@ standard-aggression-timer-ticks: 3600
 
 # Set to true to disable player-owned pokemon from being aggressive without provocation
 owned-pokemon-aggression-disabled: false
+
+# This will be applied to all damage instances of aggressive damage! Does not affect in-battle, only FoF attacks.
+universal-damage-modifier: 1.0
 
 # Set to true to disable the PokeWand from targeting other players
 disable-wand-on-players: false

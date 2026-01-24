@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.kuramastone"
-version = "1.2.3"
+version = project.property("mod_version") as String
 
 architectury {
     platformSetupLoomIde()
@@ -129,7 +129,7 @@ tasks.register<Jar>("sourcesJar") {
 }
 
 tasks.named("publishToMavenLocal") {
-    dependsOn(tasks.remapJar)
+    dependsOn(tasks.build)
 }
 
 // configure the maven publication

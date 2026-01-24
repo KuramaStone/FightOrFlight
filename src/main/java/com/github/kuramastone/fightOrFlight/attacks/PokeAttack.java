@@ -68,12 +68,13 @@ public abstract class PokeAttack {
         if (!(defender instanceof Player))
             resetInvulnerabilityTicks(defender);
 
+        double propertyModifier = Math.max(0.0, FofDamagePropertyType.getMultiplier(attacker.getPokemon()));
         double damage;
         if (defender instanceof PokemonEntity pokeDefender) {
             damage = calculateDamage(multiplier, isSpecial, moveType, attacker.getPokemon(), pokeDefender.getPokemon());
-            double propertyModifier = Math.max(0.0, FofDamagePropertyType.getMultiplier(attacker.getPokemon()));
+            double universalModifier = FightOrFlightMod.instance.getAPI().getConfigOptions().universalDamageModifier;
 
-            int actualDamage = (int) Math.ceil(damage * propertyModifier);
+            int actualDamage = (int) Math.ceil(damage * propertyModifier * universalModifier);
             PokeWandDamageEvent damageEvent = new PokeWandDamageEvent(attacker, pokeDefender, actualDamage, multiplier, isSpecial, moveType);
             FOFEvents.POKEWAND_DAMAGE_EVENT.emit(damageEvent);
             if (!damageEvent.isCanceled()) {
@@ -123,7 +124,7 @@ public abstract class PokeAttack {
             Move move = getHighestDamagingMoveOfType(attacker.getPokemon(), moveType, isSpecial);
             double highestDamagingMoveOfType = move == null ? 50 : Math.max(move.getPower(), 50);
             Pokemon equivalent = FightOrFlightMod.instance.getAPI().getConfigOptions().getPokemonEquivalent(defender.getType());
-            damage = multiplier * PokeUtils.calculatePokeAttackDamage(attacker.getPokemon(),
+            damage = propertyModifier * multiplier * PokeUtils.calculatePokeAttackDamage(attacker.getPokemon(),
                     equivalent,
                     moveType, highestDamagingMoveOfType, isSpecial, false);
 

@@ -15,9 +15,13 @@ class FofDamagePropertyType : CustomPokemonPropertyType<FofDamageProperty> {
     companion object {
         @JvmStatic
         fun getMultiplier(pokemon: Pokemon): Double {
-            return (pokemon.customProperties.firstOrNull { it is FofDamageProperty } as? FofDamageProperty)?.multiplier ?: 1.0
+            val prop = pokemon.customProperties
+                .filterIsInstance<FofDamageProperty>()
+                .firstOrNull()
+            return prop?.multiplier ?: 1.0
         }
     }
+
 }
 
 class FofDamageProperty(val multiplier: Double) : CustomPokemonProperty {
@@ -30,7 +34,7 @@ class FofDamageProperty(val multiplier: Double) : CustomPokemonProperty {
     override fun asString() = "fof-damage=$multiplier"
 
     override fun matches(pokemon: Pokemon): Boolean {
-        return pokemon.customProperties.firstOrNull { it is FofDamageProperty && it.multiplier == this.multiplier } != null
+        return pokemon.customProperties.firstOrNull { it is FofDamageProperty && this.multiplier == it.multiplier } != null
     }
 
 }

@@ -11,6 +11,8 @@ import com.github.kuramastone.fightOrFlight.event.FightFleeChanceCalculation;
 import com.github.kuramastone.fightOrFlight.pokeproperties.AggressionBiasProperty;
 import com.github.kuramastone.fightOrFlight.pokeproperties.FightPlayersOnlyPropertyType;
 import com.github.kuramastone.fightOrFlight.utils.FleeUtils;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -184,6 +186,8 @@ public class WrappedPokemon {
     }
 
     public boolean isAllowedToAttackTarget(LivingEntity target) {
+        if(target == null)
+            return false;
         if(target instanceof Mob mob) {
             if(mob.isNoAi()) {
                 return false;
@@ -200,6 +204,7 @@ public class WrappedPokemon {
         if(pokemonEntity.getOwner() != null && target != null) {
             if(pokemonEntity.getOwner() instanceof Player playerOwner) {
                 if (!PokeAttack.canAttack(playerOwner, target)) {
+
                     return false;
                 }
             }

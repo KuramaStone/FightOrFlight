@@ -45,6 +45,7 @@ public class ConfigOptions {
     public double fleeBiasValue;
     public int commandDelayInSeconds;
     public double recoilPercentage;
+    public double universalDamageModifier;
 
     public boolean allowPvP;
 
@@ -86,6 +87,7 @@ public class ConfigOptions {
             allowPvP = config.getBoolean("allow-pvp");
             commandDelayInSeconds = config.getDouble("command-usage-delay-seconds").intValue();
             recoilPercentage = config.getDouble("recoil-percentage", 0.1);
+            universalDamageModifier = config.getDouble("universal-damage-modifier", 1.0);
 
 
         } catch (Exception e) {

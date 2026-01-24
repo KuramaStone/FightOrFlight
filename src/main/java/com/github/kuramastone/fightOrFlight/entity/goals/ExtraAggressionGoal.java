@@ -224,6 +224,10 @@ public class ExtraAggressionGoal extends TargetGoal {
                 return false;
             }
         }
+        else if(!this.wrappedPokemon.isAllowedToAttackTarget(livingEntity)) {
+            return false;
+        }
+
         return true;
     }
 
