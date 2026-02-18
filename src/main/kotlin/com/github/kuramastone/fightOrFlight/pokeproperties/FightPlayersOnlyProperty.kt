@@ -1,5 +1,6 @@
 package com.github.kuramastone.fightOrFlight.pokeproperties
 
+import com.cobblemon.mod.common.api.pokemon.PokemonProperties
 import com.cobblemon.mod.common.api.properties.CustomPokemonPropertyType
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.pokemon.properties.FlagProperty
@@ -11,10 +12,12 @@ class FightPlayersOnlyPropertyType : CustomPokemonPropertyType<FlagProperty> {
     override fun examples() = listOf("true", "false")
 
     override fun fromString(value: String?): FlagProperty? {
-        if(value == null) return null
-        if (value in keys)
-            return FlagProperty(value, false)
-        return null
+        return if (value == null || value.lowercase() in listOf("true", "yes"))
+            FlagProperty(KEYS.first(), false)
+        else if (value.lowercase() in listOf("false", "no"))
+            FlagProperty(KEYS.first(), true)
+        else
+            null
     }
 
     companion object {
@@ -23,7 +26,7 @@ class FightPlayersOnlyPropertyType : CustomPokemonPropertyType<FlagProperty> {
 
         @JvmStatic
         fun matches(pokemon: Pokemon): Boolean {
-            return KEYS.any { FlagProperty(it, false).matches(pokemon) }
+            return PokemonProperties.parse(KEYS.first()).matches(pokemon)
         }
     }
 }

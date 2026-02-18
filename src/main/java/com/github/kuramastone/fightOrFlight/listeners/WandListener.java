@@ -123,6 +123,7 @@ public class WandListener {
                         if (pokemonEntity != targetEntity) {
                             WrappedPokemon wrappedPokemon = api.getWrappedPokemon(pokemonEntity);
                             if (wrappedPokemon == null) continue;
+                            if(!wrappedPokemon.isAllowedToAttackTarget(targetEntity)) continue;
                             wrappedPokemon.setTarget(targetEntity, true);
                             success = true;
                         }
