@@ -4,7 +4,8 @@ config-version: 6
 # PokemonProperties for pokegive and developers:
 # - `aggression-bias=<value>`: Used to increase the likelihood of a pokemon attacking or fleeing
 # - `aggression-rate=<value>`: Used to modify how quickly the Pokemon is pushed to attacking/fleeing
-# - 'fof-damage`: Used to modify the damage of a Pokemon
+# - 'fof-damage`: Used to modify the damage of a Pokemon does to enemies
+# - 'fof-resistance': Used to modify the damage a pokemon receives
 # - 'fof-player-only`: Used to force the pokemon to only target Players
 
 # Exp multiplier when defeating pokemon outside of battle
