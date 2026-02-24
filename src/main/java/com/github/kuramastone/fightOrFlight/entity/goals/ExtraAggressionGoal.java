@@ -172,7 +172,11 @@ public class ExtraAggressionGoal extends TargetGoal {
 
         // disable if default time is set to ignore.
         if (getDefaultAggression() < 0) {
-            return false;
+            // ignore the modifier if its been customized
+            double aggressionModifier = AggressionRateProperty.getAggressionRateModifier(pokemonEntity.getPokemon());
+            if(aggressionModifier == 1.0) {
+                return false;
+            }
         }
 
         // if pokemon already has target, dont use
@@ -251,23 +255,15 @@ public class ExtraAggressionGoal extends TargetGoal {
     }
 
     private void resetAggression() {
-        double aggressionModifier = getAggressionRateModifier();
-        int defaultValue = (int) ((getDefaultAggression() * 100.0 / this.wrappedPokemon.getHigherAttackStat().getRight()) / aggressionModifier);
+        double aggressionModifier = AggressionRateProperty.getAggressionRateModifier(pokemonEntity.getPokemon());
+        int defaultAggressionValue = getDefaultAggression();
+        if(defaultAggressionValue <= 0 && aggressionModifier != 1.0)
+            defaultAggressionValue = 3600;
+        int defaultValue = (int) ((defaultAggressionValue * 100.0 / this.wrappedPokemon.getHigherAttackStat().getRight()) / aggressionModifier);
         AggressionResetEvent event = new AggressionResetEvent(wrappedPokemon, defaultValue);
         FOFEvents.AGGRESSION_RESET.emit(event);
 
         aggressionCounter = event.getAggressionTimer();
-    }
-
-    // Get the Pokemon's aggression modifier if present
-    private double getAggressionRateModifier() {
-        Optional<CustomPokemonProperty> optional = pokemonEntity.getPokemon().getCustomProperties().stream().filter(it -> it instanceof AggressionRateProperty).findFirst();
-
-        if(optional.isPresent()) {
-            return ((AggressionRateProperty) optional.get()).getMultiplier();
-        }
-
-        return 1.0;
     }
 
 
