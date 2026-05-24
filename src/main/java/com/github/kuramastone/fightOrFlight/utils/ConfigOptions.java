@@ -67,8 +67,10 @@ public class ConfigOptions {
                     LoaderSettings.builder().setAutoUpdate(true).build(),
                     UpdaterSettings.builder()
                             .addIgnoredRoute("2", Route.from("entity-to-pokemon")) // dont auto-update this section
-
                             .addIgnoredRoute("3", Route.from("entity-to-pokemon")) // dont auto-update this section
+                            .addIgnoredRoute("6", Route.from("entity-to-pokemon")) // dont auto-update this section
+                            .addIgnoredRoute("7", Route.from("entity-to-pokemon")) // dont auto-update this section
+                            .addIgnoredRoute("8", Route.from("entity-to-pokemon")) // dont auto-update this section
                             .build());
             document = config;
             loadEntityTypes(config);

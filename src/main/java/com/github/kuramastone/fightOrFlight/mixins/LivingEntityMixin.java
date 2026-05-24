@@ -4,6 +4,7 @@ import com.cobblemon.mod.common.api.types.ElementalTypes;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.github.kuramastone.fightOrFlight.FightOrFlightMod;
+import com.github.kuramastone.fightOrFlight.pokeproperties.FofResistancePropertyType;
 import com.github.kuramastone.fightOrFlight.utils.PokeUtils;
 import com.github.kuramastone.fightOrFlight.utils.ReflectionUtils;
 import com.github.kuramastone.fightOrFlight.utils.Utils;
@@ -49,7 +50,8 @@ public class LivingEntityMixin {
                         Pokemon pokeAttacker = FightOrFlightMod.instance.getAPI().getConfigOptions().getPokemonEquivalent(livingAttacker.getType());
                         float pokeDamage = (float) PokeUtils.calculatePokeAttackDamage(pokeAttacker, pokeDefender.getPokemon(), ElementalTypes.NORMAL, 50, false, true);
                         float entityDamage = pokeDamage / pokeDefender.getPokemon().getMaxHealth() * pokeDefender.getMaxHealth();
-                        f = entityDamage;
+                        double damageResistanceModifier = Math.max(0.0, FofResistancePropertyType.getMultiplier(pokeDefender.getPokemon()));
+                        f = (float) (entityDamage * damageResistanceModifier);
 
                         f = ReflectionUtils.livingEntityMethod_getDamageAfterArmorAbsorb(defender, damageSource, f);
                         f = ReflectionUtils.livingEntityMethod_getDamageAfterMagicAbsorb(defender, damageSource, f);

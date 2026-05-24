@@ -1,4 +1,4 @@
-config-version: 6
+config-version: 7
 
 # Extras:
 # PokemonProperties for pokegive and developers:
@@ -29,6 +29,9 @@ disable-wand-on-players: false
 
 #Attack/Flee bias when angered. Low values = more likely to attack. High values = more likely to flee. Try not changing this by more than +/- 2.
 fight-or-flight-bias: 0.0
+
+# If true, then players can target other players
+allow-pvp: False
 
 # aggression is disabled for these pokemon
 aggression-disabled-pokemon:
