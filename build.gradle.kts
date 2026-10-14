@@ -25,8 +25,6 @@ loom {
 }
 
 val fabricApiVersion: String by project
-val blossomLibVersion: String by project
-val blossomPvpVersion: String by project
 
 repositories {
     mavenLocal()
@@ -41,7 +39,6 @@ repositories {
 
     maven("https://maven.blazing-coop.net/releases")
     maven("https://repo.kyori.net/snapshots")
-    maven("https://maven.codedsakura.dev/releases")
 }
 
 val shade by configurations.creating {
@@ -81,19 +78,15 @@ dependencies {
     shade("net.kyori:adventure-text-serializer-plain:4.18.0")
     shade("net.kyori:adventure-text-serializer-gson:4.18.0")
 
-    modImplementation("com.cobblemon:fabric:1.7.1+1.21.1-SNAPSHOT")
+    modImplementation("com.cobblemon:fabric:1.8.2+1.21.1-SNAPSHOT")
     // command library
     //includeAndImplement("io.github.revxrsal:lamp.common:4.0.0-rc.2")
     //includeAndImplement("io.github.revxrsal:lamp.fabric:4.0.0-rc.2")
     shade("dev.dejvokep:boosted-yaml:1.3.6")
 
     compileOnly("net.luckperms:api:5.4")
-    compileOnly("dev.codedsakura.blossom:blossom-lib:${blossomLibVersion}") {
-        exclude("xyz.nucleoid")
-    }
-    compileOnly("dev.codedsakura.blossom:blossom-pvp:${blossomPvpVersion}") {
-        exclude("xyz.nucleoid")
-    }
+    add("compileOnly", files("libs/blossom-lib-2.5.9+1.21.jar"))
+    add("compileOnly", files("libs/blossom-pvp-2.0.5+1.21.jar"))
 }
 
 tasks.getByName<Test>("test") {

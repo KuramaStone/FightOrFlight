@@ -10,12 +10,15 @@ import com.github.kuramastone.fightOrFlight.utils.ExpiryList;
 import com.github.kuramastone.fightOrFlight.utils.PermissionUtils;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import kotlinx.datetime.serializers.TimeBasedDateTimeUnitSerializer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.CipherBase;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -45,8 +48,13 @@ public class CommandHandler {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(Commands.literal("pokewand")
-                            .requires(it -> it.hasPermission(2) || (it.isPlayer()  && Permissions.check(it.getPlayer(), "fightorflight.commands.pokewand")))
+                    .requires(source -> source.hasPermission(2)
+                            || (source.isPlayer()
+                            && Permissions.check(source.getPlayer(), "fightorflight.commands.pokewand")))
                     .executes(this::pokewand)
+                    .then(Commands.argument("player", EntityArgument.player())
+                            .requires(it -> hasAdminPermission(it))
+                            .executes(this::pokewandForPlayer))
             );
             dispatcher.register(Commands.literal("fightorflight")
                     .requires(it -> hasAdminPermission(it))
@@ -57,7 +65,6 @@ public class CommandHandler {
 
         });
     }
-
     private int scale(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         Entity target = getEntityLookedAt(player, 16.0);
@@ -118,6 +125,11 @@ public class CommandHandler {
     private int pokewand(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
 
+        if(player == null) {
+            context.getSource().sendFailure(style("Only players can receive a pokewand! Use /pokewand <player>"));
+            return 0;
+        }
+
         if (wandTimer.contains(player.getUUID())) {
             player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.cooldown")
                     .replace("{duration}", wandTimer.getDurationFor(player.getUUID()))
@@ -133,5 +145,17 @@ public class CommandHandler {
         player.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.received")));
         return 1;
     }
+
+    private int pokewandForPlayer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer target = EntityArgument.getPlayer(context, "player");
+
+        WandReceiveEvent event = new WandReceiveEvent(target, Duration.ZERO);
+        FOFEvents.WAND_COMMAND_COOLDOWN.emit(event);
+        target.addItem(api.getWandManager().getWand());
+        target.sendSystemMessage(style(api.getConfigOptions().getMessage("Messages.pokewand.received")));
+        context.getSource().sendSystemMessage(style("The target received a pokewand."));
+        return 1;
+    }
+
 
 }
